@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#20A0B1</color>
-    <color name="colorPrimaryDark">#1B435E</color>
-    <color name="colorAccent">#54E2FF</color>
-    <color name="colorTab">#588BAD</color>
-    <color name="colorToolbar">#537DC4</color>
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorAccent">#EC008C</color>
+    <color name="colorTab">#000000</color>
+    <color name="colorToolbar">#8A8A8A</color>
     <color name="TabText">#FFFFFF</color>
     <color name="border_shade">#F9A825</color>
     <color name="listText">#000000</color>
-    <color name="tabSelect">#54E2FF</color>
+    <color name="tabSelect">#EC008C</color>
     <color name="myColor">#572920</color>
     <color name="toastColor">#CCFF90</color>
 </resources>
