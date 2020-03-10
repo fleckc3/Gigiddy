@@ -1,4 +1,4 @@
-package sda.oscail.edu.giggidee;
+package sda.oscail.edu.gigiddy;
 
 import android.content.Context;
 

@@ -1,24 +1,21 @@
-package sda.oscail.edu.giggidee;
+package sda.oscail.edu.gigiddy;
 
 
-import android.graphics.Color;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+
+import androidx.fragment.app.Fragment;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class Noticeboard extends Fragment {
+public class Roster extends Fragment {
 
 
-    public Noticeboard() {
+    public Roster() {
         // Required empty public constructor
     }
 
@@ -27,8 +24,7 @@ public class Noticeboard extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View root = inflater.inflate(R.layout.fragment_noticeboard, container, false);
-
+        View root = inflater.inflate(R.layout.fragment_roster, container, false);
         return root;
     }
 

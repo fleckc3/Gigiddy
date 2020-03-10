@@ -1,4 +1,4 @@
-package sda.oscail.edu.giggidee;
+package sda.oscail.edu.gigiddy;
 
 
 import android.os.Bundle;
@@ -12,10 +12,10 @@ import androidx.fragment.app.Fragment;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class Roster extends Fragment {
+public class Chat extends Fragment {
 
 
-    public Roster() {
+    public Chat() {
         // Required empty public constructor
     }
 
@@ -24,7 +24,7 @@ public class Roster extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View root = inflater.inflate(R.layout.fragment_roster, container, false);
+        View root = inflater.inflate(R.layout.fragment_chat, container, false);
         return root;
     }
 

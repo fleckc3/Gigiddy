@@ -1,4 +1,4 @@
-package sda.oscail.edu.giggidee;
+package sda.oscail.edu.gigiddy;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
