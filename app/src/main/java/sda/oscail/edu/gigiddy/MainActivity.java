@@ -6,6 +6,8 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -17,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static final int BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT = 1;
     ViewPager viewPager;
+
 
     private FirebaseAuth mAuth;
     private FirebaseUser mUser;
@@ -38,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
             mUsername = mUser.getEmail();
             Toast.makeText(this, "Logged in as " + mUsername, Toast.LENGTH_SHORT).show();
         }
+
 
         //set the toolbar we have overridden
         Toolbar toolbar = findViewById(R.id.toolbar);

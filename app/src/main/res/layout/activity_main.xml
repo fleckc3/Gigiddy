@@ -23,7 +23,8 @@
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
             android:paddingTop="4dp"
-            app:srcCompat="@drawable/logo" />
+            app:srcCompat="@drawable/logo"
+            android:contentDescription="TODO" />
 
 
     </androidx.appcompat.widget.Toolbar>
@@ -44,6 +45,7 @@
             app:tabMode="fixed"
             app:tabSelectedTextColor="@color/tabSelect"
             app:tabTextColor="@color/TabText" />
+
     </androidx.viewpager.widget.ViewPager>
 
 
