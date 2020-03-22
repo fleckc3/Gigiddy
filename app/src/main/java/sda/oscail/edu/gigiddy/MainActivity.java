@@ -18,6 +18,8 @@ import com.google.firebase.auth.FirebaseUser;
 public class MainActivity extends AppCompatActivity {
 
     public static final int BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT = 1;
+    // View name of the header title. Used for activity scene transitions
+    public static final String VIEW_NAME_HEADER_TITLE = "detail:header:title";
     ViewPager viewPager;
 
 

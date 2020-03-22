@@ -2,6 +2,8 @@ package sda.oscail.edu.gigiddy;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.util.Pair;
 
 import android.content.Intent;
 import android.os.Bundle;
