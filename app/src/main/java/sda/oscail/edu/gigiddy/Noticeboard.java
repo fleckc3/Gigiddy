@@ -36,15 +36,15 @@ public class Noticeboard extends Fragment {
 
 
 
-        Button logout = root.findViewById(R.id.btn_logout);
-        logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FirebaseAuth.getInstance().signOut();
-                Intent toMain = new Intent(getContext(), MainActivity.class);
-                startActivity(toMain);
-            }
-        });
+//        Button logout = root.findViewById(R.id.btn_logout);
+//        logout.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                FirebaseAuth.getInstance().signOut();
+//                Intent toMain = new Intent(getContext(), MainActivity.class);
+//                startActivity(toMain);
+//            }
+//        });
 
         return root;
     }

@@ -2,13 +2,13 @@
 <resources>
     <color name="colorPrimary">#EC008C</color>
     <color name="colorPrimaryDark">#000000</color>
-    <color name="colorAccent">#FFFFFF</color>
+    <color name="colorAccent">#EC008C</color>
     <color name="colorTab">#000000</color>
-    <color name="colorToolbar">#8A8A8A</color>
-    <color name="TabText">#FFFFFF</color>
+    <color name="colorToolbar">#CFCFCF</color>
+    <color name="TabText">#000000</color>
     <color name="border_shade">#F9A825</color>
     <color name="listText">#000000</color>
-    <color name="tabSelect">#EC008C</color>
+    <color name="tabSelect">#FFFFFF</color>
     <color name="myColor">#572920</color>
     <color name="toastColor">#CCFF90</color>
 </resources>

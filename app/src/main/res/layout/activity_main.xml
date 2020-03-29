@@ -22,9 +22,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
+            android:contentDescription="TODO"
             android:paddingTop="4dp"
-            app:srcCompat="@drawable/gigiddy"
-            android:contentDescription="TODO" />
+            app:srcCompat="@drawable/gigiddy" />
 
 
     </androidx.appcompat.widget.Toolbar>

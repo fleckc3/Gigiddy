@@ -15,6 +15,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class SignUp extends AppCompatActivity {
     private static final String TAG = "SignUp";
@@ -23,6 +25,7 @@ public class SignUp extends AppCompatActivity {
     TextView login;
     Button btnRegister;
     private FirebaseAuth mAuth;
+    private DatabaseReference dbRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +39,8 @@ public class SignUp extends AppCompatActivity {
         password = findViewById(R.id.password);
         btnRegister = findViewById(R.id.btn_register);
         login = findViewById(R.id.textView4);
+
+        dbRef = FirebaseDatabase.getInstance().getReference();
 
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,8 +63,15 @@ public class SignUp extends AppCompatActivity {
                             if (!task.isSuccessful()) {
                                 Toast.makeText(SignUp.this, "Register Error, Please try again", Toast.LENGTH_SHORT).show();
                             } else {
+
+                                //add user to db
+                                String currentUserID = mAuth.getCurrentUser().getUid();
+                                dbRef.child("Users").child(currentUserID).setValue("");
+
                                 Intent toMainActivity = new Intent(SignUp.this, MainActivity.class);
+                                toMainActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 startActivity(toMainActivity);
+                                finish();
                             }
                         }
                     });
