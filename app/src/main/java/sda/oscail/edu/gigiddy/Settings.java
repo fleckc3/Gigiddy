@@ -14,8 +14,11 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -28,6 +31,7 @@ public class Settings extends AppCompatActivity {
     private Button updateAccountSettings;
     private EditText username, userStatus;
     private CircleImageView userProfileImage;
+    private Button btnHome;
     private String currentUserID;
     private FirebaseAuth mAuth;
     private DatabaseReference dbRef;
@@ -46,6 +50,7 @@ public class Settings extends AppCompatActivity {
         username = findViewById(R.id.set_username);
         userStatus = findViewById(R.id.set_status);
         userProfileImage = findViewById(R.id.set_profile_image);
+        btnHome = findViewById(R.id.btn_home);
 
         //update account settings
         updateAccountSettings.setOnClickListener(new View.OnClickListener() {
@@ -54,9 +59,42 @@ public class Settings extends AppCompatActivity {
                 updateSettings();
             }
         });
+
+        btnHome.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent toMainActivity = new Intent(Settings.this, MainActivity.class);
+                startActivity(toMainActivity);
+            }
+        });
+
+        getUserInfo();
     }
 
+    private void getUserInfo() {
+        dbRef.child("Users").child(currentUserID)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.exists() && dataSnapshot.hasChild("name") && dataSnapshot.hasChild("status")) {
+                            String getUsername = dataSnapshot.child("name").getValue().toString();
+                            String getUserStatus = dataSnapshot.child("status").getValue().toString();
+                            //String getUserImage = dataSnapshot.child("image").getValue().toString();
 
+                            username.setText(getUsername);
+                            userStatus.setText(getUserStatus);
+
+                        } else {
+                            Toast.makeText(Settings.this, "Update your profile information...", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+    }
 
     private void updateSettings() {
         String setUsername = username.getText().toString();
@@ -76,11 +114,11 @@ public class Settings extends AppCompatActivity {
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            if(!task.isSuccessful()) {
+                            if(task.isSuccessful()) {
+                                Toast.makeText(Settings.this, "Profile updated!", Toast.LENGTH_SHORT).show();
+                            } else {
                                 String message = Objects.requireNonNull(task.getException()).toString();
                                 Toast.makeText(Settings.this, "Error: " + message, Toast.LENGTH_SHORT).show();
-                            } else {
-                                Toast.makeText(Settings.this, "Profile updated!", Toast.LENGTH_SHORT).show();
                             }
                         }
                     });

@@ -34,18 +34,6 @@ public class Noticeboard extends Fragment {
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_noticeboard, container, false);
 
-
-
-//        Button logout = root.findViewById(R.id.btn_logout);
-//        logout.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                FirebaseAuth.getInstance().signOut();
-//                Intent toMain = new Intent(getContext(), MainActivity.class);
-//                startActivity(toMain);
-//            }
-//        });
-
         return root;
     }
 

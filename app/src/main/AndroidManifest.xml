@@ -14,7 +14,8 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:label">
-        <activity android:name=".Settings"></activity>
+        <activity android:name=".GroupChat"></activity>
+        <activity android:name=".Settings" />
         <activity android:name=".SignUp" />
         <activity android:name=".Login" />
         <activity android:name=".DateSwap" />

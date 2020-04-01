@@ -22,16 +22,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/set_profile_image"
-        android:inputType="textMultiLine"
-        android:hint="@string/settings_username"
-        android:textAlignment="center"
-        android:drawableStart="@drawable/edit_profile"
-        android:textColor="@color/colorPrimaryDark"
-        android:textStyle="bold"
         android:layout_marginStart="15dp"
+        android:layout_marginTop="30dp"
         android:layout_marginEnd="15dp"
+        android:drawableStart="@drawable/edit_profile"
+        android:hint="@string/settings_username"
         android:padding="6dp"
-        android:layout_marginTop="30dp"/>
+        android:textAlignment="center"
+        android:textColor="@color/colorPrimaryDark"
+        android:textStyle="bold" />
 
     <EditText
         android:id="@+id/set_status"
@@ -46,7 +45,7 @@
         android:textStyle="bold"
         android:layout_marginStart="15dp"
         android:layout_marginEnd="15dp"
-        android:padding="6dp"
+        android:paddingBottom="11dp"
         android:layout_marginTop="20dp"/>
 
     <Button
@@ -63,5 +62,16 @@
         android:textAlignment="center"
         android:textColor="@color/colorPrimary"
         android:textSize="20sp" />
+
+    <Button
+        android:id="@+id/btn_home"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/update_settings"
+        android:layout_marginTop="30dp"
+        android:layout_centerHorizontal="true"
+        android:text="@string/btn_back"
+        android:textAllCaps="false"
+        android:textColor="@color/colorPrimary" />
 
 </RelativeLayout>

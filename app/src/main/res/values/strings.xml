@@ -17,4 +17,6 @@
     <string name="settings_username">username</string>
     <string name="status_hint">Hey I am online...</string>
     <string name="button_update">Update</string>
+    <string name="settings_btn_home">Home</string>
+    <string name="btn_back"><![CDATA[<-]]></string>
 </resources>
