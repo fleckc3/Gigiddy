@@ -1,10 +1,12 @@
 package sda.oscail.edu.gigiddy;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -54,6 +56,18 @@ public class Chat extends Fragment {
         chatListView.setAdapter(arrayAdapter);
 
         displayChatGroups();
+
+        // ref: https://www.youtube.com/watch?v=vSe8oZu3xRg&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=19
+        chatListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String currentChatName = parent.getItemAtPosition(position).toString();
+
+                Intent chatIntent = new Intent(getContext(), GroupChat.class);
+                chatIntent.putExtra("chat_name", currentChatName);
+                startActivity(chatIntent);
+            }
+        });
 
         return root;
     }
