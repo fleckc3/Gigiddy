@@ -35,7 +35,7 @@
                 android:textColor="@android:color/background_dark"
                 android:layout_marginStart="2dp"
                 android:layout_marginEnd="2dp"
-                android:layout_marginBottom="50dp"/>
+                android:layout_marginBottom="30dp"/>
         </LinearLayout>
     </ScrollView>
 
@@ -54,15 +54,15 @@
             android:hint="Say something..."
             android:padding="17dp"
             android:layout_weight="4"
-            android:maxLength="30"
-            android:maxLines="1"/>
+            />
 
         <ImageButton
             android:id="@+id/send_message_btn"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:src="@drawable/send_message"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:layout_gravity="bottom"/>
 
     </LinearLayout>
 

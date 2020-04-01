@@ -69,6 +69,13 @@ public class GroupChat extends AppCompatActivity {
         scrollView = findViewById(R.id.scroll_view);
         showTextMessages = findViewById(R.id.chat_text_display);
 
+        scrollView.post(new Runnable() {
+            @Override
+            public void run() {
+                scrollView.fullScroll(View.FOCUS_DOWN);
+            }
+        });
+
         Toast.makeText(this, currentChatName, Toast.LENGTH_SHORT).show();
 
         userInfo();
@@ -79,6 +86,7 @@ public class GroupChat extends AppCompatActivity {
                 saveMessageToDB();
 
                 messageInput.setText("");
+                scrollView.fullScroll(scrollView.FOCUS_DOWN);
             }
         });
     }
@@ -88,6 +96,7 @@ public class GroupChat extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         dbGroupRef.addChildEventListener(new ChildEventListener() {
+
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 if(dataSnapshot.exists()) {
@@ -177,6 +186,14 @@ public class GroupChat extends AppCompatActivity {
 
             showTextMessages.append(chatName + " :\n" + chatMessage + "\n" + chatTime + "    " + chatDate + "\n\n\n");
 
+            scrollView.fullScroll(scrollView.FOCUS_DOWN);
+
         }
+        scrollView.post(new Runnable() {
+            @Override
+            public void run() {
+                scrollView.fullScroll(View.FOCUS_DOWN);
+            }
+        });
     }
 }
