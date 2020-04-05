@@ -40,6 +40,8 @@ dependencies {
     implementation 'com.applandeo:material-calendar-view:1.4.0'
     //https://github.com/hdodenhof/CircleImageView
     implementation 'de.hdodenhof:circleimageview:3.1.0'
+    // https://github.com/ArthurHub/Android-Image-Cropper
+    api 'com.theartofdev.edmodo:android-image-cropper:2.8+'
 
 
 }

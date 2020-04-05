@@ -15,7 +15,8 @@
         app:civ_border_color="@color/colorPrimary"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="45dp"/>
+        android:layout_marginTop="45dp"
+        android:elevation="20dp"/>
 
     <EditText
         android:id="@+id/set_username"
@@ -26,6 +27,8 @@
         android:layout_marginTop="30dp"
         android:layout_marginEnd="15dp"
         android:drawableStart="@drawable/edit_profile"
+        android:background="@drawable/rectangle"
+        android:elevation="20dp"
         android:hint="@string/settings_username"
         android:padding="6dp"
         android:textAlignment="center"
@@ -41,11 +44,13 @@
         android:hint="@string/status_hint"
         android:textAlignment="center"
         android:drawableStart="@drawable/edit_status"
+        android:background="@drawable/rectangle"
+        android:elevation="20dp"
         android:textColor="@color/colorPrimaryDark"
         android:textStyle="bold"
         android:layout_marginStart="15dp"
         android:layout_marginEnd="15dp"
-        android:paddingBottom="11dp"
+        android:padding="6dp"
         android:layout_marginTop="20dp"/>
 
     <Button

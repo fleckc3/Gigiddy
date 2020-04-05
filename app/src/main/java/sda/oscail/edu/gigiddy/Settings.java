@@ -1,11 +1,27 @@
 package sda.oscail.edu.gigiddy;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.ComponentName;
+import android.content.ContentProvider;
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.provider.MediaStore;
+import android.system.ErrnoException;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,8 +35,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -28,19 +51,24 @@ import de.hdodenhof.circleimageview.CircleImageView;
 // reference https://www.youtube.com/watch?v=pI53o4r5vSo&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=13
 public class Settings extends AppCompatActivity {
 
+    private static final String TAG = "Settings";
     private Button updateAccountSettings;
     private EditText username, userStatus;
     private CircleImageView userProfileImage;
     private Button btnHome;
+
     private String currentUserID;
     private FirebaseAuth mAuth;
     private DatabaseReference dbRef;
+
+    public static final int gallerySet = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
+        // Firebase and db references
         mAuth = FirebaseAuth.getInstance();
         currentUserID = mAuth.getCurrentUser().getUid();
         dbRef = FirebaseDatabase.getInstance().getReference();
@@ -60,6 +88,7 @@ public class Settings extends AppCompatActivity {
             }
         });
 
+        // go back to main activity btn
         btnHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -69,7 +98,16 @@ public class Settings extends AppCompatActivity {
         });
 
         getUserInfo();
+
+        userProfileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent getPicIntent = new Intent(Settings.this, SetProfileImage.class);
+                startActivity(getPicIntent);
+            }
+        });
     }
+
 
     private void getUserInfo() {
         dbRef.child("Users").child(currentUserID)
