@@ -62,6 +62,9 @@ public class GroupChat extends AppCompatActivity {
         toolbar = findViewById(R.id.group_chat_bar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(currentChatName);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
 
         //initialise chat view objects
         sendMessaegBtn = findViewById(R.id.send_message_btn);

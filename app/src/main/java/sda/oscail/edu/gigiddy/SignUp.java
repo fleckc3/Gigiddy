@@ -68,9 +68,9 @@ public class SignUp extends AppCompatActivity {
                                 String currentUserID = mAuth.getCurrentUser().getUid();
                                 dbRef.child("Users").child(currentUserID).setValue("");
 
-                                Intent toMainActivity = new Intent(SignUp.this, MainActivity.class);
-                                toMainActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(toMainActivity);
+                                Intent toSettingsActivity = new Intent(SignUp.this, Settings.class);
+                                toSettingsActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(toSettingsActivity);
                                 finish();
                             }
                         }

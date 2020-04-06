@@ -61,8 +61,8 @@ public class Settings extends AppCompatActivity {
     private String currentUserID;
     private FirebaseAuth mAuth;
     private DatabaseReference dbRef;
+    private String imageUrl;
 
-    public static final int gallerySet = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,22 +109,24 @@ public class Settings extends AppCompatActivity {
         });
     }
 
-
+    // retrieve user info from db and storage
     private void getUserInfo() {
         dbRef.child("Users").child(currentUserID)
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if(dataSnapshot.exists() && dataSnapshot.hasChild("name") && dataSnapshot.hasChild("status")) {
+                        if(dataSnapshot.exists() && dataSnapshot.hasChild("name") && dataSnapshot.hasChild("status") && dataSnapshot.hasChild("image")) {
                             String getUsername = dataSnapshot.child("name").getValue().toString();
                             String getUserStatus = dataSnapshot.child("status").getValue().toString();
                             String getUserImage = dataSnapshot.child("image").getValue().toString();
+                            imageUrl = getUserImage;
 
-                            username.setText(getUsername);
-                            userStatus.setText(getUserStatus);
                             Glide.with(Settings.this)
                                     .load(getUserImage)
                                     .into(userProfileImage);
+                            username.setText(getUsername);
+                            userStatus.setText(getUserStatus);
+
 
                         } else {
                             Toast.makeText(Settings.this, "Update your profile information...", Toast.LENGTH_SHORT).show();
@@ -138,9 +140,11 @@ public class Settings extends AppCompatActivity {
                 });
     }
 
+    // update user info in db and storage
     private void updateSettings() {
         String setUsername = username.getText().toString();
         String setStatus = userStatus.getText().toString();
+
 
         if(TextUtils.isEmpty(setUsername)) {
             Toast.makeText(this, "Please set your username...", Toast.LENGTH_SHORT).show();
@@ -149,6 +153,9 @@ public class Settings extends AppCompatActivity {
         } else {
 
             HashMap<String, String> profileMap = new HashMap<>();
+            if(imageUrl != null) {
+                profileMap.put("image", imageUrl);
+            }
             profileMap.put("uid", currentUserID);
             profileMap.put("name", setUsername);
             profileMap.put("status", setStatus);
