@@ -27,6 +27,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -117,10 +118,13 @@ public class Settings extends AppCompatActivity {
                         if(dataSnapshot.exists() && dataSnapshot.hasChild("name") && dataSnapshot.hasChild("status")) {
                             String getUsername = dataSnapshot.child("name").getValue().toString();
                             String getUserStatus = dataSnapshot.child("status").getValue().toString();
-                            //String getUserImage = dataSnapshot.child("image").getValue().toString();
+                            String getUserImage = dataSnapshot.child("image").getValue().toString();
 
                             username.setText(getUsername);
                             userStatus.setText(getUserStatus);
+                            Glide.with(Settings.this)
+                                    .load(getUserImage)
+                                    .into(userProfileImage);
 
                         } else {
                             Toast.makeText(Settings.this, "Update your profile information...", Toast.LENGTH_SHORT).show();

@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Intent;
@@ -22,8 +23,10 @@ import android.system.ErrnoException;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -59,6 +62,8 @@ public class SetProfileImage extends AppCompatActivity {
     private String currentUserID;
     private FirebaseAuth mAuth;
 
+    private ProgressDialog loadingBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,6 +71,7 @@ public class SetProfileImage extends AppCompatActivity {
 
         mCropImageView = findViewById(R.id.CropImageView);
         saveImage = findViewById(R.id.save_image);
+        loadingBar = new ProgressDialog(this);
 
         // Firebase and db references
         mAuth = FirebaseAuth.getInstance();
@@ -77,39 +83,59 @@ public class SetProfileImage extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                loadingBar.setTitle("Set profile Image");
+                loadingBar.setMessage("Please wait, your profile image is updating...");
+                loadingBar.setCanceledOnTouchOutside(false);
+                loadingBar.show();
+
                 //ref: https://firebase.google.com/docs/storage/android/upload-files
                 Bitmap croppedImage = mCropImageView.getCroppedImage();
                 ByteArrayOutputStream bytes = new ByteArrayOutputStream();
                 croppedImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
                 byte[] data = bytes.toByteArray();
 
-
-                StorageReference filePath = userProfileImageRef.child(currentUserID + ".jpg");
+                final StorageReference filePath = userProfileImageRef.child(currentUserID + ".jpg");
                 final UploadTask uploadTask = filePath.putBytes(data);
                 uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         if(uploadTask.isSuccessful()) {
                             Toast.makeText(SetProfileImage.this, "Image uploaded successfully!", Toast.LENGTH_SHORT).show();
+
+                            //ref: https://stackoverflow.com/questions/50158921/firebase-storage-retrieves-a-long-lived-download-url-using-getdownloadurl-no
+                            taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    String downloadUrl = uri.toString();
+                                    Log.d(TAG, "/////////////////// ------ " + downloadUrl);
+
+                                    ref: https://www.youtube.com/watch?v=zV9PSBnCkJc&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=27
+                                    dbRef.child("Users").child(currentUserID).child("image")
+                                            .setValue(downloadUrl)
+                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    if(task.isSuccessful()) {
+                                                        Toast.makeText(SetProfileImage.this, "Image save in database successfully...", Toast.LENGTH_SHORT).show();
+                                                        loadingBar.dismiss();
+                                                         Intent goBacktoSettings = new Intent(SetProfileImage.this, Settings.class);
+                                                         startActivity(goBacktoSettings);
+                                                    } else {
+                                                        String message = task.getException().toString();
+                                                        Toast.makeText(SetProfileImage.this, "Error: " + message, Toast.LENGTH_SHORT).show();
+                                                        loadingBar.dismiss();
+                                                    }
+                                                }
+                                    });
+                                }
+                            });
                         } else {
                             String message = uploadTask.getException().toString();
                             Toast.makeText(SetProfileImage.this, "Error: " + message, Toast.LENGTH_SHORT).show();
+                            loadingBar.dismiss();
                         }
                     }
                 });
-
-
-//                filePath.putFile(cropped).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-//                        if(task.isSuccessful()) {
-//                            Toast.makeText(SetProfileImage.this, "Image uploaded successfully!", Toast.LENGTH_SHORT).show();
-//                        } else {
-//                            String message = task.getException().toString();
-//                            Toast.makeText(SetProfileImage.this, "Error: " + message, Toast.LENGTH_SHORT).show();
-//                        }
-//                    }
-//                });
             }
         });
     }
@@ -138,6 +164,7 @@ public class SetProfileImage extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
+
             Uri imageUri = getPickImageResultUri(data);
 
             // For API >= 23 we need to check specifically that we have permissions to read external storage,

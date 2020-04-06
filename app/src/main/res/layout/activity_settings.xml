@@ -28,10 +28,10 @@
         android:layout_marginEnd="15dp"
         android:drawableStart="@drawable/edit_profile"
         android:background="@drawable/rectangle"
+        android:textAlignment="center"
         android:elevation="20dp"
         android:hint="@string/settings_username"
         android:padding="6dp"
-        android:textAlignment="center"
         android:textColor="@color/colorPrimaryDark"
         android:textStyle="bold" />
 
@@ -73,8 +73,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/update_settings"
-        android:layout_marginTop="30dp"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
         android:text="@string/btn_back"
         android:textAllCaps="false"
         android:textColor="@color/colorPrimary" />

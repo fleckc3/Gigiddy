@@ -18,12 +18,12 @@
     <string name="status_hint">Hey I am online...</string>
     <string name="button_update">Update</string>
     <string name="settings_btn_home">Home</string>
-    <string name="btn_back"><![CDATA[<-]]></string>
     <string name="phone_num_hint">Enter your phone number here....</string>
     <string name="verification_code_hint">Write verification code here...</string>
     <string name="send_verification_btn">Send Verification</string>
     <string name="verify_btn">Verify</string>
     <string name="crop_image">Crop Image</string>
     <string name="select_image">Select Image</string>
-    <string name="save_image">save Image</string>
+    <string name="save_image">Save Image &amp; Return</string>
+    <string name="btn_back">BACK</string>
 </resources>
