@@ -8,7 +8,7 @@
 
     <include
         android:id="@+id/app_bar_layout"
-        layout="@layout/app_bar_layout"
+        layout="@layout/chat_bar_layout"
         >
 
     </include>

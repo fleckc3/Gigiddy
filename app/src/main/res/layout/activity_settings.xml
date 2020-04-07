@@ -6,16 +6,21 @@
     android:layout_height="match_parent"
     tools:context=".Settings">
 
+    <include
+        android:id="@+id/setting_app_bar"
+        layout="@layout/chat_bar_layout"
+        ></include>
+
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/set_profile_image"
+        android:layout_below="@+id/setting_app_bar"
         android:layout_width="250dp"
         android:layout_height="250dp"
         android:src="@drawable/profile_image"
         app:civ_border_width="2dp"
         app:civ_border_color="@color/colorPrimary"
-        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="45dp"
+        android:layout_marginTop="32dp"
         android:elevation="20dp"/>
 
     <EditText

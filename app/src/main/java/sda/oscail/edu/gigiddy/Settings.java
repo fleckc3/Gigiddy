@@ -3,6 +3,7 @@ package sda.oscail.edu.gigiddy;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.Manifest;
 import android.app.Activity;
@@ -57,6 +58,7 @@ public class Settings extends AppCompatActivity {
     private EditText username, userStatus;
     private CircleImageView userProfileImage;
     private Button btnHome;
+    private Toolbar toolbar;
 
     private String currentUserID;
     private FirebaseAuth mAuth;
@@ -80,6 +82,12 @@ public class Settings extends AppCompatActivity {
         userStatus = findViewById(R.id.set_status);
         userProfileImage = findViewById(R.id.set_profile_image);
         btnHome = findViewById(R.id.btn_home);
+
+        toolbar = findViewById(R.id.setting_app_bar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setTitle("Settings");
 
         //update account settings
         updateAccountSettings.setOnClickListener(new View.OnClickListener() {
