@@ -6,6 +6,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -64,7 +65,7 @@ public class FindMembers extends AppCompatActivity {
 
         FirebaseRecyclerAdapter<Contacts, findMembersViewHolder> adapter = new FirebaseRecyclerAdapter<Contacts, findMembersViewHolder>(options) {
             @Override
-            protected void onBindViewHolder(@NonNull findMembersViewHolder findMembersViewHolder, int i, @NonNull Contacts contacts) {
+            protected void onBindViewHolder(@NonNull findMembersViewHolder findMembersViewHolder, final int i, @NonNull Contacts contacts) {
                 findMembersViewHolder.userName.setText(contacts.getName());
                 findMembersViewHolder.userStatus.setText(contacts.getStatus());
 
@@ -74,6 +75,16 @@ public class FindMembers extends AppCompatActivity {
                         .load(contacts.getImage())
                         .placeholder(R.drawable.profile_image)
                         .into(findMembersViewHolder.profileImage);
+
+                findMembersViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String goToUser = getRef(i).getKey();
+                        Intent gotToProfile = new Intent(FindMembers.this, Profile.class);
+                        gotToProfile.putExtra("user_id", goToUser);
+                        startActivity(gotToProfile);
+                    }
+                });
             }
 
             @NonNull
