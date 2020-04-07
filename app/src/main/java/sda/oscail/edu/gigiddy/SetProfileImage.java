@@ -57,7 +57,6 @@ public class SetProfileImage extends AppCompatActivity {
     private CropImageView mCropImageView;
     private Uri mCropImageUri;
     Button saveImage;
-    private Toolbar toolbar;
 
     private DatabaseReference dbRef;
     private StorageReference userProfileImageRef;
@@ -70,12 +69,6 @@ public class SetProfileImage extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set_profile_image);
-
-        toolbar = findViewById(R.id.set_image_app_bar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setTitle("Profile Image");
 
         mCropImageView = findViewById(R.id.CropImageView);
         saveImage = findViewById(R.id.save_image);

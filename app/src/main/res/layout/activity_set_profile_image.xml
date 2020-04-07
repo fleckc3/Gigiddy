@@ -7,11 +7,6 @@
     android:orientation="vertical"
     tools:context=".SetProfileImage">
 
-    <include
-        android:id="@+id/set_image_app_bar"
-        layout="@layout/chat_bar_layout"
-        ></include>
-
     <com.theartofdev.edmodo.cropper.CropImageView
         android:id="@+id/CropImageView"
         android:layout_width="match_parent"

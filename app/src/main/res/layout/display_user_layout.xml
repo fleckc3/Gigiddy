@@ -11,12 +11,13 @@
         android:layout_margin="7dp"
         android:orientation="horizontal"
         android:background="@drawable/rectangle"
-        android:elevation="10dp">
+        android:elevation="6dp"
+        android:padding="5dp">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/user_profile_image"
-            android:layout_width="85dp"
-            android:layout_height="85dp"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
             android:layout_margin="5dp"
             android:src="@drawable/profile_image"/>
 

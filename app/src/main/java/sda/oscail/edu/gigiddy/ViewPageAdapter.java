@@ -40,6 +40,10 @@ public class ViewPageAdapter extends FragmentPagerAdapter{
                 //code
                 fragment = new Roster();
                 break;
+            case 4:
+                //code
+                fragment = new Members();
+                break;
         }
 
         return fragment;
@@ -47,7 +51,7 @@ public class ViewPageAdapter extends FragmentPagerAdapter{
 
     @Override
     public int getCount() {
-        return 3;
+        return 4;
     }
 
     @Override
@@ -70,6 +74,10 @@ public class ViewPageAdapter extends FragmentPagerAdapter{
             case 3:
                 //code
                 tabTitle = "ROSTER";
+                break;
+            case 4:
+                //code
+                tabTitle = "Members";
                 break;
         }
 
