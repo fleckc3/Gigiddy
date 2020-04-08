@@ -64,6 +64,7 @@ public class Settings extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private DatabaseReference dbRef;
     private String imageUrl;
+    private static String fromActivity;
 
 
     @Override
@@ -81,13 +82,34 @@ public class Settings extends AppCompatActivity {
         username = findViewById(R.id.set_username);
         userStatus = findViewById(R.id.set_status);
         userProfileImage = findViewById(R.id.set_profile_image);
-       // btnHome = findViewById(R.id.btn_home);
 
-        toolbar = findViewById(R.id.setting_app_bar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setTitle("Settings");
+        // String value passed from signup activity to be checked in the following if statement
+        fromActivity = getIntent().getExtras().get("from_activity").toString();
+        Log.d(TAG, "///////////////// ------------- " +fromActivity);
+
+        // If string variable equals regiser then previous activity was the signup activity
+        if(fromActivity.equals("main")) {
+
+            toolbar = findViewById(R.id.setting_app_bar);
+            toolbar.setVisibility(View.VISIBLE);
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setTitle("Settings");
+
+        } else if(fromActivity.equals("register")) {
+            btnHome = findViewById(R.id.btn_home);
+
+            // go back to main activity btn
+            btnHome.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent toMainActivity = new Intent(Settings.this, MainActivity.class);
+                    startActivity(toMainActivity);
+                }
+            });
+        }
+
 
         //update account settings
         updateAccountSettings.setOnClickListener(new View.OnClickListener() {
@@ -96,15 +118,6 @@ public class Settings extends AppCompatActivity {
                 updateSettings();
             }
         });
-
-//        // go back to main activity btn
-//        btnHome.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent toMainActivity = new Intent(Settings.this, MainActivity.class);
-//                startActivity(toMainActivity);
-//            }
-//        });
 
         getUserInfo();
 
@@ -196,6 +209,12 @@ public class Settings extends AppCompatActivity {
                         }
                     });
 
+            if(fromActivity.equals("register")) {
+                btnHome.setEnabled(true);
+                btnHome.setVisibility(View.VISIBLE);
+            }
         }
+
+
     }
 }

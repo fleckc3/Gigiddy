@@ -110,7 +110,7 @@ public class SetProfileImage extends AppCompatActivity {
                                     String downloadUrl = uri.toString();
                                     Log.d(TAG, "/////////////////// ------ " + downloadUrl);
 
-                                    ref: https://www.youtube.com/watch?v=zV9PSBnCkJc&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=27
+                                    // ref: https://www.youtube.com/watch?v=zV9PSBnCkJc&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=27
                                     dbRef.child("Users").child(currentUserID).child("image")
                                             .setValue(downloadUrl)
                                             .addOnCompleteListener(new OnCompleteListener<Void>() {

@@ -25,7 +25,7 @@
     <string name="crop_image">Crop Image</string>
     <string name="select_image">Select Image</string>
     <string name="save_image">Save Image &amp; Return</string>
-    <string name="btn_back">BACK</string>
+    <string name="btn_back">Home</string>
     <string name="username_placeholder">username</string>
     <string name="user_status_placeholder">user status</string>
     <string name="send_message_request_btn">Send Message</string>
