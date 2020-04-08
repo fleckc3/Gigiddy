@@ -69,7 +69,6 @@ public class FindMembers extends AppCompatActivity {
                 findMembersViewHolder.userName.setText(contacts.getName());
                 findMembersViewHolder.userStatus.setText(contacts.getStatus());
 
-            //    Picasso.get().load(contacts.getImage()).into(findMembersViewHolder.profileImage);
 
                 Glide.with(findMembersViewHolder.profileImage.getContext())
                         .load(contacts.getImage())

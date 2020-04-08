@@ -117,6 +117,11 @@ public class MainActivity extends AppCompatActivity {
             startActivity(findMemberActivity);
         }
 
+        if(item.getItemId() == R.id.requests_option) {
+            Intent checkRequestsIntent = new Intent(MainActivity.this, CheckRequests.class);
+            startActivity(checkRequestsIntent);
+        }
+
         return true;
     }
 
