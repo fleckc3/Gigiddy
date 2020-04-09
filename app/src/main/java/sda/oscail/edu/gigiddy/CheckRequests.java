@@ -1,21 +1,26 @@
 package sda.oscail.edu.gigiddy;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -32,7 +37,7 @@ public class CheckRequests extends AppCompatActivity {
     private Toolbar toolbar;
     private RecyclerView requestList;
 
-    private DatabaseReference dbRequestRef, dbUsersRef;
+    private DatabaseReference dbRequestRef, dbUsersRef, dbContactsRef;
     private FirebaseAuth mAuth;
     private String currentUserId;
 
@@ -55,6 +60,7 @@ public class CheckRequests extends AppCompatActivity {
         currentUserId = mAuth.getCurrentUser().getUid();
         dbRequestRef = FirebaseDatabase.getInstance().getReference().child("Chat Requests");
         dbUsersRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        dbContactsRef = FirebaseDatabase.getInstance().getReference().child("Contacts");
 
     }
 
@@ -62,19 +68,24 @@ public class CheckRequests extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+        // Firebase object queries request db for all requests between users using the contact model class
         FirebaseRecyclerOptions<Contacts> options = new FirebaseRecyclerOptions.Builder<Contacts>()
                 .setQuery(dbRequestRef.child(currentUserId), Contacts.class)
                 .build();
 
+        // Takes the options above and binds the information into the the viewholder. creates a viewholder for each option that meets the criteria
         FirebaseRecyclerAdapter<Contacts, RequestViewHolder> adapter = new FirebaseRecyclerAdapter<Contacts, RequestViewHolder>(options) {
             @Override
             protected void onBindViewHolder(@NonNull final RequestViewHolder requestViewHolder, int i, @NonNull final Contacts contacts) {
 
+                // sets the accept/cancel buttons visible in the viewholder
                 requestViewHolder.itemView.findViewById(R.id.request_accept).setVisibility(View.VISIBLE);
                 requestViewHolder.itemView.findViewById(R.id.request_deny).setVisibility(View.VISIBLE);
 
+                // gets user id at each position in options object passed into the adapter
                 final String userIDs = getRef(i).getKey();
 
+                // gets the request_type ref at each for each request reference in the db
                 DatabaseReference getTypeRef = getRef(i).child("request_type").getRef();
                 getTypeRef.addValueEventListener(new ValueEventListener() {
                     @Override
@@ -82,30 +93,138 @@ public class CheckRequests extends AppCompatActivity {
                         if(dataSnapshot.exists()) {
                             String type = dataSnapshot.getValue().toString();
 
+                            // if request_type has value received
                             if(type.equals("received")) {
+
+                                // take the userId who sent the request and get their profile information from the users db
                                 dbUsersRef.child(userIDs).addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
+                                        // check because having an image is optional
                                         if(dataSnapshot.hasChild("image")) {
-                                            final String requestSenderName = dataSnapshot.child("name").getValue().toString();
-                                            final String requestSenderStatus = dataSnapshot.child("status").getValue().toString();
+
+                                            // user information intialised in these variables
                                             final String requestSenderImage = dataSnapshot.child("image").getValue().toString();
 
-                                            requestViewHolder.userName.setText(requestSenderName);
-                                            requestViewHolder.userStatus.setText(requestSenderStatus);
-
+                                            // variables info passed into the viewholder fields
                                             Glide.with(requestViewHolder.profileImage.getContext())
                                                     .load(requestSenderImage)
                                                     .placeholder(R.drawable.profile_image)
                                                     .into(requestViewHolder.profileImage);
-                                        } else {
-                                            final String requestSenderName = dataSnapshot.child("name").getValue().toString();
-                                            final String requestSenderStatus = dataSnapshot.child("status").getValue().toString();
 
-                                            requestViewHolder.userName.setText(requestSenderName);
-                                            requestViewHolder.userStatus.setText(requestSenderStatus);
                                         }
+
+                                        final String requestSenderName = dataSnapshot.child("name").getValue().toString();
+                                        final String requestSenderStatus = dataSnapshot.child("status").getValue().toString();
+
+                                        requestViewHolder.userName.setText(requestSenderName);
+                                        requestViewHolder.userStatus.setText("Wants to connect with you.");
+
+                                        // creates alert dialog on click to accept or cancel the request
+                                        requestViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                CharSequence options[] = new CharSequence[] {
+                                                        "Accept",
+                                                        "Cancel"
+                                                };
+
+                                                AlertDialog.Builder builder = new AlertDialog.Builder(CheckRequests.this);
+                                                builder.setTitle("Join Request from " + requestSenderName);
+
+                                                builder.setItems(options, new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        // Accept request
+                                                        if(which == 0) {
+
+                                                            // update contact db to for sender and receiever to now be contacts aka saved
+                                                            // 1st update receiver
+                                                            dbContactsRef.child(currentUserId).child(userIDs).child("Contacts")
+                                                                    .setValue("Saved").addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                @Override
+                                                                public void onComplete(@NonNull Task<Void> task) {
+
+                                                                    // if successful, now update the sender in contact db
+                                                                    if(task.isSuccessful()) {
+                                                                        dbContactsRef.child(userIDs).child(currentUserId).child("Contacts")
+                                                                                .setValue("Saved").addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                            @Override
+                                                                            public void onComplete(@NonNull Task<Void> task) {
+
+                                                                                // if successful...
+                                                                                if(task.isSuccessful()) {
+
+                                                                                    // update the request db and remove the request as they are now contacts
+                                                                                    // 1st update receiver user
+                                                                                    dbRequestRef.child(currentUserId).child(userIDs)
+                                                                                            .removeValue()
+                                                                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                                                @Override
+                                                                                                public void onComplete(@NonNull Task<Void> task) {
+
+                                                                                                    //if successful, update sender user and remove request in the request db
+                                                                                                    if(task.isSuccessful()) {
+                                                                                                        dbRequestRef.child(userIDs).child(currentUserId)
+                                                                                                                .removeValue()
+                                                                                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                                                                    @Override
+                                                                                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                                                                                        if(task.isSuccessful()) {
+                                                                                                                            Toast.makeText(CheckRequests.this, "Contact Saved!", Toast.LENGTH_SHORT).show();
+                                                                                                                        }
+
+                                                                                                                    }
+                                                                                                                });
+                                                                                                    }
+                                                                                                }
+                                                                                            });
+
+                                                                                }
+                                                                            }
+                                                                        });
+                                                                    }
+                                                                }
+                                                            });
+                                                        }
+
+                                                        // cancel request
+                                                        if(which == 1) {
+
+                                                            // update the request db and remove the request as they are now contacts
+                                                            // 1st update receiver user
+                                                            dbRequestRef.child(currentUserId).child(userIDs)
+                                                                    .removeValue()
+                                                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                        @Override
+                                                                        public void onComplete(@NonNull Task<Void> task) {
+
+                                                                            //if successful, update sender user and remove request in the request db
+                                                                            if(task.isSuccessful()) {
+                                                                                dbRequestRef.child(userIDs).child(currentUserId)
+                                                                                        .removeValue()
+                                                                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                                            @Override
+                                                                                            public void onComplete(@NonNull Task<Void> task) {
+                                                                                                if(task.isSuccessful()) {
+                                                                                                    Toast.makeText(CheckRequests.this, "Contact Deleted!", Toast.LENGTH_SHORT).show();
+                                                                                                }
+
+                                                                                            }
+                                                                                        });
+                                                                            }
+                                                                        }
+                                                                    });
+
+                                                        }
+                                                    }
+                                                });
+
+                                                builder.show();
+
+                                            }
+                                        });
+
                                     }
 
                                     @Override
@@ -124,6 +243,7 @@ public class CheckRequests extends AppCompatActivity {
                 });
             }
 
+            // Viewholder sets the layout view to be used by each option in the recycler adapter
             @NonNull
             @Override
             public RequestViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -139,6 +259,7 @@ public class CheckRequests extends AppCompatActivity {
     }
 
 
+    // Viewholder class declares and intitialises the fields to be set bey the adapter
     public static class RequestViewHolder extends RecyclerView.ViewHolder {
 
         // fields used to initialise objects in viewHolder

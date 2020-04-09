@@ -85,28 +85,53 @@ public class Members extends Fragment {
                 dbUsersRef.child(usersIDs).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if(dataSnapshot.hasChild("image")) {
-                            String userProfileImage = dataSnapshot.child("image").getValue().toString();
-                            String userProfileName = dataSnapshot.child("name").getValue().toString();
-                            String userProfileStatus = dataSnapshot.child("status").getValue().toString();
 
-                            membersViewHolder.userName.setText(userProfileName);
-                            membersViewHolder.userStatus.setText(userProfileStatus);
+                            if(dataSnapshot.hasChild("image")) {
+                                final String userProfileImage = dataSnapshot.child("image").getValue().toString();
+                                final String userProfileName = dataSnapshot.child("name").getValue().toString();
+                                String userProfileStatus = dataSnapshot.child("status").getValue().toString();
 
-                            Glide.with(membersViewHolder.profileImage.getContext())
-                                    .load(userProfileImage)
-                                    .placeholder(R.drawable.profile_image)
-                                    .into(membersViewHolder.profileImage);
+                                membersViewHolder.userName.setText(userProfileName);
+                                membersViewHolder.userStatus.setText(userProfileStatus);
 
-                        } else {
+                                Glide.with(membersViewHolder.profileImage.getContext())
+                                        .load(userProfileImage)
+                                        .placeholder(R.drawable.profile_image)
+                                        .into(membersViewHolder.profileImage);
 
-                            String userProfileStatus = dataSnapshot.child("status").getValue().toString();
-                            String userProfileName = dataSnapshot.child("name").getValue().toString();
+                                membersViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Intent goToChatIntent = new Intent(getContext(), PrivateChat.class);
+                                        goToChatIntent.putExtra("user_id", usersIDs);
+                                        goToChatIntent.putExtra("user_name", userProfileName);
+                                        startActivity(goToChatIntent);
+                                    }
+                                });
 
-                            membersViewHolder.userName.setText(userProfileName);
-                            membersViewHolder.userStatus.setText(userProfileStatus);
+                            } else {
+
+                                String userProfileStatus = dataSnapshot.child("status").getValue().toString();
+                                final String userProfileName = dataSnapshot.child("name").getValue().toString();
+
+                                membersViewHolder.userName.setText(userProfileName);
+                                membersViewHolder.userStatus.setText(userProfileStatus);
+
+                                membersViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Intent goToChatIntent = new Intent(getContext(), PrivateChat.class);
+                                        goToChatIntent.putExtra("user_id", usersIDs);
+                                        goToChatIntent.putExtra("user_name", userProfileName);
+                                        startActivity(goToChatIntent);
+                                    }
+                                });
+
+
+                            }
+
                         }
-                    }
+
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {

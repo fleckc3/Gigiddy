@@ -4,40 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".GroupChat">
-
+    tools:context=".PrivateChat">
 
     <include
-        android:id="@+id/group_chat_bar"
+        android:id="@+id/private_chat_bar"
         layout="@layout/chat_bar_layout"
-        >
-    </include>
+        ></include>
 
-    <ScrollView
-        android:id="@+id/scroll_view"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/private_messages_list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/group_chat_bar"
-        android:layout_above="@+id/linear_layout">
+        android:layout_height="match_parent"
+        android:layout_below="@+id/private_chat_bar">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/chat_text_display"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:textAllCaps="false"
-                android:textSize="20sp"
-                android:textColor="@android:color/background_dark"
-                android:layout_marginStart="2dp"
-                android:layout_marginEnd="2dp"
-                android:layout_marginBottom="30dp"/>
-        </LinearLayout>
-    </ScrollView>
+    </androidx.recyclerview.widget.RecyclerView>
 
     <LinearLayout
         android:id="@+id/linear_layout"
@@ -51,11 +31,10 @@
             android:id="@+id/input_message"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="Say something..."
-            android:padding="17dp"
             android:layout_weight="4"
             android:backgroundTint="@color/colorPrimary"
-            />
+            android:hint="Say something..."
+            android:padding="17dp" />
 
         <ImageButton
             android:id="@+id/send_message_btn"
@@ -66,5 +45,4 @@
             android:layout_gravity="bottom"/>
 
     </LinearLayout>
-
 </RelativeLayout>

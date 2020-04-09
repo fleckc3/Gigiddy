@@ -26,6 +26,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -59,6 +60,7 @@ public class Settings extends AppCompatActivity {
     private CircleImageView userProfileImage;
     private Button btnHome;
     private Toolbar toolbar;
+    private TextView setImageText;
 
     private String currentUserID;
     private FirebaseAuth mAuth;
@@ -99,6 +101,8 @@ public class Settings extends AppCompatActivity {
 
         } else if(fromActivity.equals("register")) {
             btnHome = findViewById(R.id.btn_home);
+            setImageText = findViewById(R.id.click_image);
+            setImageText.setVisibility(View.VISIBLE);
 
             // go back to main activity btn
             btnHome.setOnClickListener(new View.OnClickListener() {
@@ -181,22 +185,21 @@ public class Settings extends AppCompatActivity {
         String setUsername = username.getText().toString();
         String setStatus = userStatus.getText().toString();
 
-        if(imageUrl == null) {
-            Toast.makeText(this, "Click image to add Profile Pic...", Toast.LENGTH_LONG).show();
-        } else if(TextUtils.isEmpty(setStatus)) {
+
+        if(TextUtils.isEmpty(setStatus)) {
             Toast.makeText(this, "Please write a status...", Toast.LENGTH_SHORT).show();
         } else if(TextUtils.isEmpty(setUsername)) {
             Toast.makeText(this, "Please set your username...", Toast.LENGTH_SHORT).show();
         } else {
 
-            HashMap<String, String> profileMap = new HashMap<>();
+            HashMap<String, Object> profileMap = new HashMap<>();
             if(imageUrl != null) {
                 profileMap.put("image", imageUrl);
             }
             profileMap.put("uid", currentUserID);
             profileMap.put("name", setUsername);
             profileMap.put("status", setStatus);
-            dbRef.child("Users").child(currentUserID).setValue(profileMap)
+            dbRef.child("Users").child(currentUserID).updateChildren(profileMap)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {

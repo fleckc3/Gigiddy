@@ -16,8 +16,10 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:label">
-        <activity android:name=".CheckRequests"
-            android:parentActivityName=".MainActivity"></activity>
+        <activity android:name=".PrivateChat"></activity>
+        <activity
+            android:name=".CheckRequests"
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".Profile"
             android:parentActivityName=".FindMembers" />

@@ -3,6 +3,7 @@ package sda.oscail.edu.gigiddy;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,6 +49,8 @@ public class Chat extends Fragment {
                              Bundle savedInstanceState) {
         dbRef = FirebaseDatabase.getInstance().getReference().child("Groups");
 
+
+
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_chat, container, false);
 
@@ -66,6 +69,7 @@ public class Chat extends Fragment {
                 Intent chatIntent = new Intent(getContext(), GroupChat.class);
                 chatIntent.putExtra("chat_name", currentChatName);
                 startActivity(chatIntent);
+
             }
         });
 
