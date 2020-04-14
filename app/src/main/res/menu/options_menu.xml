@@ -15,12 +15,6 @@
 
     </item>
     <item
-        android:title="Create group"
-        android:id="@+id/create_group_option"
-        app:showAsAction="never">
-
-    </item>
-    <item
         android:title="Settings"
         android:id="@+id/settings_option"
         app:showAsAction="never">

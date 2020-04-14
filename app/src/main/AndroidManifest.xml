@@ -16,7 +16,8 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:label">
-        <activity android:name=".PrivateChat"></activity>
+        <activity android:name=".PrivateChat"
+            android:parentActivityName=".MainActivity"></activity>
         <activity
             android:name=".CheckRequests"
             android:parentActivityName=".MainActivity" />

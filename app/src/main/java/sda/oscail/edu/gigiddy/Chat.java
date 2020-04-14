@@ -1,19 +1,27 @@
 package sda.oscail.edu.gigiddy;
 
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -36,6 +44,7 @@ public class Chat extends Fragment {
     private ListView chatListView;
     private ArrayAdapter<String> arrayAdapter;
     private ArrayList<String> chatList = new ArrayList<>();
+    private Button newGroupChatBtn;
 
     private DatabaseReference dbRef;
 
@@ -54,11 +63,20 @@ public class Chat extends Fragment {
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_chat, container, false);
 
+        // Initialise fields
         chatListView = root.findViewById(R.id.list_view);
-        arrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, chatList);
+        newGroupChatBtn = root.findViewById(R.id.new_group_chat);
+        arrayAdapter = new ArrayAdapter<String>(root.getContext(), android.R.layout.simple_list_item_1, chatList);
         chatListView.setAdapter(arrayAdapter);
 
         displayChatGroups();
+
+        newGroupChatBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startNewGroup();
+            }
+        });
 
         // ref: https://www.youtube.com/watch?v=vSe8oZu3xRg&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=19
         chatListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -100,6 +118,50 @@ public class Chat extends Fragment {
 
             }
         });
+    }
+
+    //https://www.youtube.com/watch?v=sgMO1AbUJmA&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=16
+    private void startNewGroup() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AlertDialog);
+        builder.setTitle("Enter Group Name: ");
+
+        final EditText setGroupName = new EditText(getContext());
+        setGroupName.setHint("My family chat...");
+        builder.setView(setGroupName);
+
+        builder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String groupName = setGroupName.getText().toString();
+
+                if(TextUtils.isEmpty(groupName)) {
+                    Toast.makeText(getContext(), "Please enter a group name...", Toast.LENGTH_SHORT).show();
+                } else {
+                    createNewGroup(groupName);
+                }
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+    }
+
+    private void createNewGroup(final String groupName) {
+        dbRef.child(groupName).setValue("")
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(getContext(), groupName + " group created successfully!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 
 }

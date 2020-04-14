@@ -4,18 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".PrivateChat">
+    tools:context=".PrivateChat"
+    app:contentInsetStartWithNavigation="0dp">
 
     <include
         android:id="@+id/private_chat_bar"
-        layout="@layout/chat_bar_layout"
-        ></include>
+        layout="@layout/private_chat_bar"></include>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/private_messages_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/private_chat_bar">
+        android:layout_above="@+id/linear_layout"
+        android:layout_below="@+id/private_chat_bar"
+        android:background="#DADADA">
 
     </androidx.recyclerview.widget.RecyclerView>
 
@@ -23,9 +25,9 @@
         android:id="@+id/linear_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true">
+        android:orientation="horizontal">
 
         <EditText
             android:id="@+id/input_message"
@@ -40,9 +42,9 @@
             android:id="@+id/send_message_btn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:src="@drawable/send_message"
+            android:layout_gravity="bottom"
             android:layout_weight="1"
-            android:layout_gravity="bottom"/>
+            android:src="@drawable/send_message" />
 
     </LinearLayout>
 </RelativeLayout>

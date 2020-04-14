@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,11 +35,13 @@ import de.hdodenhof.circleimageview.CircleImageView;
  */
 public class Members extends Fragment {
 
+    private static final String TAG = "Members";
     private RecyclerView memberList;
 
     private DatabaseReference dbContactsRef, dbUsersRef;
     private FirebaseAuth mAuth;
     private String currentUserId;
+
 
     public Members() {
         // Required empty public constructor
@@ -64,6 +67,7 @@ public class Members extends Fragment {
         return root;
     }
 
+
     @Override
     public void onStart() {
         super.onStart();
@@ -85,9 +89,9 @@ public class Members extends Fragment {
                 dbUsersRef.child(usersIDs).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
+                        String userProfileImage = "";
                             if(dataSnapshot.hasChild("image")) {
-                                final String userProfileImage = dataSnapshot.child("image").getValue().toString();
+                                userProfileImage = dataSnapshot.child("image").getValue().toString();
                                 final String userProfileName = dataSnapshot.child("name").getValue().toString();
                                 String userProfileStatus = dataSnapshot.child("status").getValue().toString();
 
@@ -99,13 +103,17 @@ public class Members extends Fragment {
                                         .placeholder(R.drawable.profile_image)
                                         .into(membersViewHolder.profileImage);
 
+                                final String finalUserProfileImage1 = userProfileImage;
                                 membersViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
+                                        Log.d(TAG, "MEMBERS ////////////////////////////// ----------------------------------------- " + finalUserProfileImage1);
                                         Intent goToChatIntent = new Intent(getContext(), PrivateChat.class);
                                         goToChatIntent.putExtra("user_id", usersIDs);
                                         goToChatIntent.putExtra("user_name", userProfileName);
+                                        goToChatIntent.putExtra("user_image", finalUserProfileImage1);
                                         startActivity(goToChatIntent);
+
                                     }
                                 });
 
@@ -117,12 +125,14 @@ public class Members extends Fragment {
                                 membersViewHolder.userName.setText(userProfileName);
                                 membersViewHolder.userStatus.setText(userProfileStatus);
 
+                                final String finalUserProfileImage = userProfileImage;
                                 membersViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
                                         Intent goToChatIntent = new Intent(getContext(), PrivateChat.class);
                                         goToChatIntent.putExtra("user_id", usersIDs);
                                         goToChatIntent.putExtra("user_name", userProfileName);
+                                        goToChatIntent.putExtra("user_image", finalUserProfileImage);
                                         startActivity(goToChatIntent);
                                     }
                                 });
@@ -156,7 +166,6 @@ public class Members extends Fragment {
         adapter.startListening();
     }
 
-
     // intialises the views inside the viewholder
     public static class MembersViewHolder extends RecyclerView.ViewHolder {
 
@@ -171,6 +180,13 @@ public class Members extends Fragment {
             profileImage = itemView.findViewById(R.id.user_profile_image);
 
         }
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
     }
 }
 

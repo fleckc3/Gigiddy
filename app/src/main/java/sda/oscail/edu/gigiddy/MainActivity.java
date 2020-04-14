@@ -100,10 +100,6 @@ public class MainActivity extends AppCompatActivity {
             startActivity(toSettingsActivity);
         }
 
-        if(item.getItemId() == R.id.create_group_option) {
-            startNewGroup();
-        }
-
         if(item.getItemId() == R.id.find_friends_option) {
             Intent findMemberActivity = new Intent(MainActivity.this, FindMembers.class);
             startActivity(findMemberActivity);
@@ -117,57 +113,4 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    //https://www.youtube.com/watch?v=sgMO1AbUJmA&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=16
-    private void startNewGroup() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.AlertDialog);
-        builder.setTitle("Enter Group Name: ");
-
-        final EditText setGroupName = new EditText(MainActivity.this);
-        setGroupName.setHint("My family chat...");
-        builder.setView(setGroupName);
-
-        builder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String groupName = setGroupName.getText().toString();
-
-                if(TextUtils.isEmpty(groupName)) {
-                    Toast.makeText(MainActivity.this, "Please enter a group name...", Toast.LENGTH_SHORT).show();
-                } else {
-                    createNewGroup(groupName);
-                }
-            }
-        });
-
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
-        builder.show();
-    }
-
-    private void createNewGroup(final String groupName) {
-        dbRef.child("Groups").child(groupName).setValue("")
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-
-                            dbRef.child("Groups").child(groupName).child("Type").setValue("group")
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if(task.isSuccessful()) {
-                                                Toast.makeText(MainActivity.this, groupName + " group created successfully!", Toast.LENGTH_SHORT).show();
-                                            }
-                                        }
-                                    });
-
-                        }
-                    }
-                });
-    }
 }
