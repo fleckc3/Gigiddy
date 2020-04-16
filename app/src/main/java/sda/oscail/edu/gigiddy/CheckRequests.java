@@ -28,6 +28,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
@@ -39,7 +41,7 @@ public class CheckRequests extends AppCompatActivity {
 
     private DatabaseReference dbRequestRef, dbUsersRef, dbContactsRef;
     private FirebaseAuth mAuth;
-    private String currentUserId;
+    private String currentUserId, currentUserName, senderUserName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +63,20 @@ public class CheckRequests extends AppCompatActivity {
         dbRequestRef = FirebaseDatabase.getInstance().getReference().child("Chat Requests");
         dbUsersRef = FirebaseDatabase.getInstance().getReference().child("Users");
         dbContactsRef = FirebaseDatabase.getInstance().getReference().child("Contacts");
+
+        dbUsersRef.child(currentUserId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()) {
+                    currentUserName = dataSnapshot.child("name").getValue().toString();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
     }
 
@@ -115,6 +131,7 @@ public class CheckRequests extends AppCompatActivity {
                                         }
 
                                         final String requestSenderName = dataSnapshot.child("name").getValue().toString();
+                                        senderUserName = requestSenderName;
                                         final String requestSenderStatus = dataSnapshot.child("status").getValue().toString();
 
                                         requestViewHolder.userName.setText(requestSenderName);
@@ -138,17 +155,27 @@ public class CheckRequests extends AppCompatActivity {
                                                         // Accept request
                                                         if(which == 0) {
 
+                                                            HashMap<String, Object> contactsMap = new HashMap<>();
+                                                            contactsMap.put("Contacts", "Saved");
+                                                            contactsMap.put("name", senderUserName);
+
                                                             // update contact db to for sender and receiever to now be contacts aka saved
                                                             // 1st update receiver
-                                                            dbContactsRef.child(currentUserId).child(userIDs).child("Contacts")
-                                                                    .setValue("Saved").addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                            dbContactsRef.child(currentUserId).child(userIDs)
+                                                                    .updateChildren(contactsMap)
+                                                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                                 @Override
                                                                 public void onComplete(@NonNull Task<Void> task) {
 
+                                                                    HashMap<String, Object> contactsMap = new HashMap<>();
+                                                                    contactsMap.put("Contacts", "Saved");
+                                                                    contactsMap.put("name", currentUserName);
+
                                                                     // if successful, now update the sender in contact db
                                                                     if(task.isSuccessful()) {
-                                                                        dbContactsRef.child(userIDs).child(currentUserId).child("Contacts")
-                                                                                .setValue("Saved").addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                        dbContactsRef.child(userIDs).child(currentUserId)
+                                                                                .updateChildren(contactsMap)
+                                                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                                             @Override
                                                                             public void onComplete(@NonNull Task<Void> task) {
 

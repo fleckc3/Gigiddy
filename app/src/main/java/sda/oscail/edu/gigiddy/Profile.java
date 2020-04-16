@@ -20,12 +20,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 // ref: https://www.youtube.com/watch?v=fatkPOq4AlA&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=33
 public class Profile extends AppCompatActivity {
 
-    private String receiverUserId, currentState, senderUserId;
+    private String receiverUserId, currentState, senderUserId, senderUserName;
     private Toolbar toolbar;
     private CircleImageView profileImage;
     private TextView userProfileName, userProfileStatus;
@@ -62,6 +64,19 @@ public class Profile extends AppCompatActivity {
 
         receiverUserId = getIntent().getExtras().get("user_id").toString();
         senderUserId = mAuth.getCurrentUser().getUid();
+        dbUserRef.child(senderUserId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()) {
+                    senderUserName = dataSnapshot.child("name").getValue().toString();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
         currentState = "new";
 
 
@@ -195,17 +210,26 @@ public class Profile extends AppCompatActivity {
     // sends chat request when send message buton is clicked in profile
     private void sendChatReq() {
 
+        String setUserName = userProfileName.getText().toString();
+        final String userName = senderUserName;
+
+        HashMap<String, Object> contactsMap = new HashMap<>();
+        contactsMap.put("request_type", "sent");
+        contactsMap.put("name", setUserName);
+
         //saves the request status in db for user who sends request
         dbChatReqRef.child(senderUserId).child(receiverUserId)
-                .child("request_type").setValue("sent")
+                .updateChildren(contactsMap)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if(task.isSuccessful()) {
-
+                            HashMap<String, Object> contactsMap = new HashMap<>();
+                            contactsMap.put("request_type", "received");
+                            contactsMap.put("name", userName);
                             // saves the recieved status of request with user receiving the chat request
                             dbChatReqRef.child(receiverUserId).child(senderUserId)
-                                    .child("request_type").setValue("received")
+                                    .updateChildren(contactsMap)
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
@@ -225,6 +249,7 @@ public class Profile extends AppCompatActivity {
     // Called when cancel chat request button clicked. Removes the sent and recieved values in db.
     // Resets currentState to new, hides the cancel btn, and enables the send message button again
     private void cancelChatReq() {
+
         dbChatReqRef.child(senderUserId).child(receiverUserId)
                 .removeValue()
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -258,17 +283,28 @@ public class Profile extends AppCompatActivity {
     // remove chat request between them since they are contacts now
     private void acceptChatReq() {
 
+        String setUserName = userProfileName.getText().toString();
+        final String userName = senderUserName;
+
+        HashMap<String, Object> contactsMap = new HashMap<>();
+        contactsMap.put("Contacts", "Saved");
+        contactsMap.put("name", setUserName);
+
         // update sender node in contacts db
         dbContactsRef.child(senderUserId).child(receiverUserId)
-                .child("Contacts").setValue("Saved")
+                .updateChildren(contactsMap)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if(task.isSuccessful()) {
 
+                            HashMap<String, Object> contactsMap = new HashMap<>();
+                            contactsMap.put("Contacts", "Saved");
+                            contactsMap.put("name", userName);
+
                             // update receiver node in contacts db
                             dbContactsRef.child(receiverUserId).child(senderUserId)
-                                    .child("Contacts").setValue("Saved")
+                                    .updateChildren(contactsMap)
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
