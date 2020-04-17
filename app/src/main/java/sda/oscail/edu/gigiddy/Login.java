@@ -7,8 +7,14 @@ import androidx.core.app.BundleCompat;
 import androidx.core.util.Pair;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.Spannable;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -21,6 +27,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import static androidx.annotation.InspectableProperty.ValueType.COLOR;
 
 public class Login extends AppCompatActivity {
     private static final String TAG = "Login";
@@ -44,6 +52,31 @@ public class Login extends AppCompatActivity {
         btnLogin = findViewById(R.id.btn_login);
         register = findViewById(R.id.textView4);
 
+
+        // clickable span of text at bottom
+        // ref: https://stackoverflow.com/questions/10696986/how-to-set-the-part-of-the-text-view-is-clickable
+        String bottomeText = "Not a member? Click to Signup!";
+
+        register.setMovementMethod(LinkMovementMethod.getInstance());
+        register.setText(bottomeText, TextView.BufferType.SPANNABLE);
+        Spannable span = (Spannable) register.getText();
+        ClickableSpan clickSpan = new ClickableSpan() {
+            // ref: https://stackoverflow.com/questions/16007147/how-to-get-rid-of-the-underline-in-a-spannable-string-with-a-clickable-object
+            @Override
+            public void updateDrawState(TextPaint ds) {
+                ds.setUnderlineText(false);    // this remove the underline
+            }
+            @Override
+            public void onClick(@NonNull View widget) {
+                Intent goToRegister = new Intent(Login.this, SignUp.class);
+                startActivity(goToRegister);
+            }
+        };
+        span.setSpan(clickSpan, 14, bottomeText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        span.setSpan(new ForegroundColorSpan(Color.parseColor("#EC008C")), 14, bottomeText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+
+        // Checks if user is logged in already or not
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -92,16 +125,9 @@ public class Login extends AppCompatActivity {
             }
         });
 
-        register.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent goToRegister = new Intent(Login.this, SignUp.class);
-                startActivity(goToRegister);
-            }
-        });
-
     }
 
+    // checks auth state as soon as app opens
     @Override
     public void onStart(){
         super.onStart();

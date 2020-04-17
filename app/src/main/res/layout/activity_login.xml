@@ -69,15 +69,16 @@
 
     <TextView
         android:id="@+id/textView4"
-        android:layout_width="293dp"
+        android:layout_width="match_parent"
         android:layout_height="33dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginBottom="16dp"
+        android:layout_margin="16dp"
+        android:clickable="true"
         android:text="@string/sign_up"
-        android:textSize="22sp"
+        android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:clickable="true"/>
+        android:focusable="true" />
 
     <com.google.android.gms.common.internal.SignInButtonImpl
         android:id="@+id/btn_login"

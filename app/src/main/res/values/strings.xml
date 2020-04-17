@@ -30,4 +30,5 @@
     <string name="user_status_placeholder">user status</string>
     <string name="send_message_request_btn">Send Message</string>
     <string name="cancel_chat_request">Cancel Chat Request</string>
+    <string name="member">Select Member</string>
 </resources>

@@ -4,7 +4,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -41,6 +47,29 @@ public class SignUp extends AppCompatActivity {
         login = findViewById(R.id.textView4);
 
         dbRef = FirebaseDatabase.getInstance().getReference();
+
+
+        // clickable span of text at bottom
+        // ref: https://stackoverflow.com/questions/10696986/how-to-set-the-part-of-the-text-view-is-clickable
+        String bottomeText = "Already a member? Click to Login!";
+
+        login.setMovementMethod(LinkMovementMethod.getInstance());
+        login.setText(bottomeText, TextView.BufferType.SPANNABLE);
+        Spannable span = (Spannable) login.getText();
+        ClickableSpan clickSpan = new ClickableSpan() {
+            // ref: https://stackoverflow.com/questions/16007147/how-to-get-rid-of-the-underline-in-a-spannable-string-with-a-clickable-object
+            @Override
+            public void updateDrawState(TextPaint ds) {
+                ds.setUnderlineText(false);    // this remove the underline
+            }
+            @Override
+            public void onClick(@NonNull View widget) {
+                Intent goToLogin = new Intent(SignUp.this, Login.class);
+                startActivity(goToLogin);
+            }
+        };
+        span.setSpan(clickSpan, 18, bottomeText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        span.setSpan(new ForegroundColorSpan(Color.parseColor("#EC008C")), 18, bottomeText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,12 +111,5 @@ public class SignUp extends AppCompatActivity {
             }
         });
 
-        login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent goToLogin = new Intent(SignUp.this, Login.class);
-                startActivity(goToLogin);
-            }
-        });
     }
 }
