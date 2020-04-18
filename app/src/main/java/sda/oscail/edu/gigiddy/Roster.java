@@ -49,6 +49,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.sql.Array;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -58,6 +59,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Locale;
 import java.util.Set;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
@@ -80,7 +82,7 @@ public class Roster extends Fragment {
     private List<Calendar> selectedDates = new ArrayList<>();
 
 
-    private DatabaseReference contactsRef, rootRef;
+    private DatabaseReference contactsRef, rootRef, rosterRef;
     private FirebaseAuth mAuth;
     private String currentUID, memberChosen, memberChosenID, chosenGigAndTime;
 
@@ -101,6 +103,7 @@ public class Roster extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         contactsRef = FirebaseDatabase.getInstance().getReference().child("Contacts");
         rootRef = FirebaseDatabase.getInstance().getReference();
+        rosterRef = FirebaseDatabase.getInstance().getReference().child("Roster");
         currentUID = mAuth.getCurrentUser().getUid();
 
         // intialise fields
@@ -116,7 +119,10 @@ public class Roster extends Fragment {
         adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, list);
         gigAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, gigList);
 
+        checkForDates();
         getContacts();
+
+
 
         // select member to set dates for
         chooseMember.setOnClickListener(new View.OnClickListener() {
@@ -134,6 +140,79 @@ public class Roster extends Fragment {
             }
         });
         return root;
+    }
+
+    private void checkForDates() {
+
+        Log.d(TAG, "////////////////////////////////////////-----------------------------------------   getDatesSaved method was reached ");
+
+        // gets the list of gig locations user has dates for
+        rosterRef.child(currentUID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()) {
+
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        final String id = snapshot.getKey();
+                        Log.d(TAG, "onDataChange: --------------------------------------------------------------------" + id);
+
+                        DatabaseReference gigRef = rosterRef.child(currentUID).child(id);
+                        gigRef.addValueEventListener(new ValueEventListener() {
+                            @RequiresApi(api = Build.VERSION_CODES.N)
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if(dataSnapshot.exists()) {
+                                    Iterator itr = dataSnapshot.getChildren().iterator();
+                                    Set<String> dateSet = new HashSet<>();
+                                    while(itr.hasNext()) {
+                                        String date = ((DataSnapshot)itr.next()).getValue().toString();
+                                        Log.d(TAG, "onDataChange: ----------------------------------------------------------" + date);
+                                        dateSet.add(date);
+                                    }
+
+                                    try {
+                                        setDates(dateSet, id);
+                                    } catch (ParseException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void setDates(Set<String> dates, String id) throws ParseException {
+
+        List<EventDay> events = new ArrayList<>();
+        for(String date : dates) {
+            String toConvert = date;
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-mm-yyyy");
+            Date foramttedDate = sdf.parse(toConvert);
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(foramttedDate);
+            events.add(new EventDay(cal, R.drawable.murrays_normal));
+        }
+
+        Log.d(TAG, "setDates: --------------------------------------------- " + events);
+
+        calendarView.setEvents(events);
+
     }
 
     // Alert dialog shows list of names to set dates for, click one to choose
