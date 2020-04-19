@@ -199,6 +199,7 @@ public class Settings extends AppCompatActivity {
             profileMap.put("uid", currentUserID);
             profileMap.put("name", setUsername);
             profileMap.put("status", setStatus);
+            profileMap.put("user_type", "member");
             dbRef.child("Users").child(currentUserID).updateChildren(profileMap)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override

@@ -84,7 +84,7 @@ public class Roster extends Fragment {
     private List<Calendar> selectedDates = new ArrayList<>();
 
 
-    private DatabaseReference contactsRef, rootRef, rosterRef;
+    private DatabaseReference contactsRef, rootRef, rosterRef, currentUserRef;
     private FirebaseAuth mAuth;
     private String currentUID, memberChosen, memberChosenID, chosenGigAndTime;
 
@@ -108,6 +108,7 @@ public class Roster extends Fragment {
         rootRef = FirebaseDatabase.getInstance().getReference();
         rosterRef = FirebaseDatabase.getInstance().getReference().child("Roster");
         currentUID = mAuth.getCurrentUser().getUid();
+        currentUserRef = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUID).child("user_type");
 
         // intialise fields
         chooseMember = root.findViewById(R.id.select_member);
@@ -126,6 +127,33 @@ public class Roster extends Fragment {
 
         Log.d(TAG, "///////////////////////////////////----------------------events data: "+ events);
         calendarView.setEvents(events);
+
+        // checks user type for member
+        currentUserRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                // if db value exists...
+                if(dataSnapshot.exists()) {
+                    // ...and if the type = member then they cant set dates for other user
+                    // hides the set dates functionality
+                    if(dataSnapshot.getValue().toString().equals("member")) {
+                        Log.d(TAG, "/////////////////////////////////------------------------- user type READ");
+
+                        chooseMember.setEnabled(false);
+                        chooseMember.setVisibility(View.INVISIBLE);
+                        setDates.setVisibility(View.INVISIBLE);
+                        setDates.setEnabled(false);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
 
         // select member to set dates for
         chooseMember.setOnClickListener(new View.OnClickListener() {
