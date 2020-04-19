@@ -62,8 +62,11 @@ public class Profile extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle("Profile");
 
+        // gets the id of user clicked from the findMembers intent
         receiverUserId = getIntent().getExtras().get("user_id").toString();
         senderUserId = mAuth.getCurrentUser().getUid();
+
+        //
         dbUserRef.child(senderUserId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -77,17 +80,21 @@ public class Profile extends AppCompatActivity {
 
             }
         });
+
+        // Sets the state of the relationship with user to new
         currentState = "new";
-
-
         getUserInfo();
     }
 
+    // gets the info of the profile clicked on
     private void getUserInfo() {
 
         dbUserRef.child(receiverUserId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                // checks the db ref exists and user has image
+                // sets user fields with correct info
                 if(dataSnapshot.exists() && (dataSnapshot.hasChild("image"))) {
                     String userImage = dataSnapshot.child("image").getValue().toString();
                     String userName = dataSnapshot.child("name").getValue().toString();
@@ -100,7 +107,8 @@ public class Profile extends AppCompatActivity {
 
                     userProfileName.setText(userName);
                     userProfileStatus.setText(userStatus);
-                    
+
+                    // gets info about friends request
                     manageChatRequests();
                 } else {
                     String userName = dataSnapshot.child("name").getValue().toString();
@@ -121,26 +129,32 @@ public class Profile extends AppCompatActivity {
     }
 
     // ref: https://www.youtube.com/watch?v=4M5pWsrdTS4&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=34
+    // Gets info from db on whether current user and the user profile selected are friends or pending a request
     private void manageChatRequests() {
 
-        // check if chat request has been sent
+        // looks up if this info is in db or not
         dbChatReqRef.child(senderUserId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                // if it is in db then it gets the state
                 if(dataSnapshot.hasChild(receiverUserId)) {
+
+                    // request/relationship status
                     String requestType = dataSnapshot.child(receiverUserId).child("request_type").getValue().toString();
 
                     // toggles buttons based off the request types
                     if(requestType.equals("sent")) {
                         currentState = "request_sent";
-                        sendMessageBtn.setText("Cancel chat Request");
+                        sendMessageBtn.setText("Cancel Friend Request");
                     } else if(requestType.equals("received")) {
                         currentState = "request_received";
-                        sendMessageBtn.setText("Accept Chat Request");
+                        sendMessageBtn.setText("Accept Friend Request");
 
                         cancelRequestBtn.setVisibility(View.VISIBLE);
                         cancelRequestBtn.setEnabled(true);
 
+                        // cancel friend request
                         cancelRequestBtn.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -149,10 +163,14 @@ public class Profile extends AppCompatActivity {
                         });
                     }
                 } else {
+
+                    // checks if they are friends already
                     dbContactsRef.child(senderUserId)
                             .addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                    // if friends, show button fro removing them from friends list
                                     if(dataSnapshot.hasChild(receiverUserId)) {
                                         currentState = "friends";
                                         sendMessageBtn.setText("Remove Contact");
@@ -165,8 +183,6 @@ public class Profile extends AppCompatActivity {
                                 }
                             });
                 }
-
-
             }
 
             @Override
@@ -207,7 +223,7 @@ public class Profile extends AppCompatActivity {
     }
 
     // ref: https://www.youtube.com/watch?v=4M5pWsrdTS4&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=34
-    // sends chat request when send message buton is clicked in profile
+    // sends chat request when send message button is clicked in profile
     private void sendChatReq() {
 
         String setUserName = userProfileName.getText().toString();
@@ -223,20 +239,27 @@ public class Profile extends AppCompatActivity {
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
+
+                        // if update successfull..
                         if(task.isSuccessful()) {
+
+                            // creates map of info to set in db
                             HashMap<String, Object> contactsMap = new HashMap<>();
                             contactsMap.put("request_type", "received");
                             contactsMap.put("name", userName);
-                            // saves the recieved status of request with user receiving the chat request
+
+                            // saves the received status of request with user receiving the chat request
                             dbChatReqRef.child(receiverUserId).child(senderUserId)
                                     .updateChildren(contactsMap)
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
+
+                                            // if update successfull....
                                             if(task.isSuccessful()) {
                                                 sendMessageBtn.setEnabled(true);
                                                 currentState = "request_sent";
-                                                sendMessageBtn.setText("Cancel chat request");
+                                                sendMessageBtn.setText("Cancel Friend Request");
                                             }
                                         }
                                     });
@@ -250,22 +273,32 @@ public class Profile extends AppCompatActivity {
     // Resets currentState to new, hides the cancel btn, and enables the send message button again
     private void cancelChatReq() {
 
+        // gets the value saved for sender and receiver request
         dbChatReqRef.child(senderUserId).child(receiverUserId)
                 .removeValue()
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
+
+                        // if remove value successful...
                         if(task.isSuccessful()) {
+
+                            // ...remove request for receiver
                             dbChatReqRef.child(receiverUserId).child(senderUserId)
                                     .removeValue()
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
+
+                                            // if remove successful...
                                             if(task.isSuccessful()) {
+
+                                                // update back to neutral realtionship values
                                                 sendMessageBtn.setEnabled(true);
                                                 currentState = "new";
-                                                sendMessageBtn.setText("Send Message");
+                                                sendMessageBtn.setText("Send Friend Request");
 
+                                                // cancel button
                                                 cancelRequestBtn.setVisibility(View.INVISIBLE);
                                                 cancelRequestBtn.setEnabled(false);
                                             }
@@ -275,7 +308,6 @@ public class Profile extends AppCompatActivity {
                         }
                     }
                 });
-
     }
 
     // ref: https://www.youtube.com/watch?v=h-P6hHdjmZk&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=37
@@ -283,9 +315,11 @@ public class Profile extends AppCompatActivity {
     // remove chat request between them since they are contacts now
     private void acceptChatReq() {
 
+        // grabs name of sender
         String setUserName = userProfileName.getText().toString();
         final String userName = senderUserName;
 
+        // creates map of info to be updated in db: contact = saved(aka friends), and the contacts name
         HashMap<String, Object> contactsMap = new HashMap<>();
         contactsMap.put("Contacts", "Saved");
         contactsMap.put("name", setUserName);
@@ -296,8 +330,11 @@ public class Profile extends AppCompatActivity {
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
+
+                        // if udpate successful....
                         if(task.isSuccessful()) {
 
+                            // ...create map object to update for receiever in db: contacts = saved(aka friends), and contacts name
                             HashMap<String, Object> contactsMap = new HashMap<>();
                             contactsMap.put("Contacts", "Saved");
                             contactsMap.put("name", userName);
@@ -308,27 +345,36 @@ public class Profile extends AppCompatActivity {
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
+
+                                            // if update successful....
                                             if(task.isSuccessful()) {
 
-                                                // remove sender node in chat requests db
+                                                // ....remove sender node in chat requests db. friends now so no request info needed anymore
                                                 dbChatReqRef.child(senderUserId).child(receiverUserId)
                                                         .removeValue()
                                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                             @Override
                                                             public void onComplete(@NonNull Task<Void> task) {
 
-                                                                // remove receiver node in chat requests db
+                                                                // if remove successful....
                                                                 if(task.isSuccessful()) {
+
+                                                                    // ...remove receiver node in chat requests db. friends now so no request info needed anymore
                                                                     dbChatReqRef.child(receiverUserId).child(senderUserId)
                                                                             .removeValue()
                                                                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                                                 @Override
                                                                                 public void onComplete(@NonNull Task<Void> task) {
+
+                                                                                    // if remove successful....
                                                                                     if(task.isSuccessful()) {
+
+                                                                                        // update info to reflect new status: friends
                                                                                         sendMessageBtn.setEnabled(true);
                                                                                         currentState = "friends";
                                                                                         sendMessageBtn.setText("Remove Contact");
 
+                                                                                        // hide cancel button
                                                                                         cancelRequestBtn.setVisibility(View.INVISIBLE);
                                                                                         cancelRequestBtn.setEnabled(false);
                                                                                     }
@@ -346,36 +392,42 @@ public class Profile extends AppCompatActivity {
     }
 
     // ref: https://www.youtube.com/watch?v=O-P8mqtL4Sc&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=38
-
+    // remove the sending user and receiver user as contacts from contact db
     private void removeSpecificContact() {
-        // remove the sending user and reciever user as contacts from contact db
+
+        // remove sender/receiver relationship
         dbContactsRef.child(senderUserId).child(receiverUserId)
                 .removeValue()
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
+
+                        // if remove successful...
                         if(task.isSuccessful()) {
 
-                            // remove receiving user and sending user as contacts fro contact db
+                            // remove receiver/sender user relationship from contact db
                             dbContactsRef.child(receiverUserId).child(senderUserId)
                                     .removeValue()
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
+
+                                            // if remove successful...
                                             if(task.isSuccessful()) {
+
+                                                // update info to refelct new relationship status: not friends
                                                 sendMessageBtn.setEnabled(true);
                                                 currentState = "new";
-                                                sendMessageBtn.setText("Send Message");
+                                                sendMessageBtn.setText("Send Friend Request");
 
+                                                // hide cancel button
                                                 cancelRequestBtn.setVisibility(View.INVISIBLE);
                                                 cancelRequestBtn.setEnabled(false);
                                             }
-
                                         }
                                     });
                         }
                     }
                 });
     }
-
 }
