@@ -16,13 +16,14 @@
         <com.applandeo.materialcalendarview.CalendarView
             android:id="@+id/calendarView"
             android:layout_width="0dp"
-            android:layout_height="365dp"
+            android:layout_height="390dp"
+            app:eventsEnabled="true"
             app:headerColor="@color/colorPrimary"
-            app:selectionColor="@color/colorPrimary"
-            app:todayLabelColor="@color/colorPrimary"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:selectionColor="@color/colorPrimary"
+            app:todayLabelColor="@color/colorPrimary"
             app:type="one_day_picker">
 
         </com.applandeo.materialcalendarview.CalendarView>

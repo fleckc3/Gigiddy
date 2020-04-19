@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 // ref: https://www.youtube.com/watch?v=WGOY7Lsac1U&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=41
 public class CheckRequests extends AppCompatActivity {
 
+    private static final String TAG = "CheckRequests";
     private Toolbar toolbar;
     private RecyclerView requestList;
 
@@ -100,6 +102,7 @@ public class CheckRequests extends AppCompatActivity {
 
                 // gets user id at each position in options object passed into the adapter
                 final String userIDs = getRef(i).getKey();
+                Log.d(TAG, "////////////////////////////////////////////------------------------------ user keys: " + userIDs);
 
                 // gets the request_type ref at each for each request reference in the db
                 DatabaseReference getTypeRef = getRef(i).child("request_type").getRef();
@@ -111,7 +114,7 @@ public class CheckRequests extends AppCompatActivity {
 
                             // if request_type has value received
                             if(type.equals("received")) {
-
+                                Log.d(TAG, "////////////////////////////////////////----------------------------- type = receieved");
                                 // take the userId who sent the request and get their profile information from the users db
                                 dbUsersRef.child(userIDs).addValueEventListener(new ValueEventListener() {
                                     @Override
@@ -132,7 +135,7 @@ public class CheckRequests extends AppCompatActivity {
 
                                         final String requestSenderName = dataSnapshot.child("name").getValue().toString();
                                         senderUserName = requestSenderName;
-                                        final String requestSenderStatus = dataSnapshot.child("status").getValue().toString();
+                                      //  final String requestSenderStatus = dataSnapshot.child("status").getValue().toString();
 
                                         requestViewHolder.userName.setText(requestSenderName);
                                         requestViewHolder.userStatus.setText("Wants to connect with you.");
@@ -259,6 +262,8 @@ public class CheckRequests extends AppCompatActivity {
 
                                     }
                                 });
+                            } else {
+                                requestViewHolder.itemView.setVisibility(View.INVISIBLE);
                             }
                         }
                     }

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Entity;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.icu.text.DateFormat;
 import android.icu.text.Edits;
 import android.icu.text.SimpleDateFormat;
@@ -74,6 +75,7 @@ public class Roster extends Fragment {
     private ArrayList<String> list = new ArrayList<>();
     private ArrayList<String> idList = new ArrayList<>();
     private ArrayList<String> gigList = new ArrayList<>();
+    List<EventDay> events = new ArrayList<>();
     private ArrayAdapter<String> adapter, gigAdapter;
     private Button setDates, chooseMember;
     private TextView chosenMemberTextView;
@@ -93,6 +95,7 @@ public class Roster extends Fragment {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -119,10 +122,10 @@ public class Roster extends Fragment {
         adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, list);
         gigAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, gigList);
 
-        checkForDates();
         getContacts();
 
-
+        Log.d(TAG, "///////////////////////////////////----------------------events data: "+ events);
+        calendarView.setEvents(events);
 
         // select member to set dates for
         chooseMember.setOnClickListener(new View.OnClickListener() {
@@ -142,28 +145,38 @@ public class Roster extends Fragment {
         return root;
     }
 
-    private void checkForDates() {
+    @Override
+    public void onStart() {
+        super.onStart();
+        checkForDates();
+    }
 
+    private void checkForDates() {
         Log.d(TAG, "////////////////////////////////////////-----------------------------------------   getDatesSaved method was reached ");
 
-        // gets the list of gig locations user has dates for
+        // gets the gig dates/locations/times the current user has been assigned in db
         rosterRef.child(currentUID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()) {
 
+                    // loops through the gig locations and gets dates assigned to gig at that location
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         final String id = snapshot.getKey();
                         Log.d(TAG, "onDataChange: --------------------------------------------------------------------" + id);
 
+                        // gets all dates under specific gig location
                         DatabaseReference gigRef = rosterRef.child(currentUID).child(id);
                         gigRef.addValueEventListener(new ValueEventListener() {
                             @RequiresApi(api = Build.VERSION_CODES.N)
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
                                 if(dataSnapshot.exists()) {
                                     Iterator itr = dataSnapshot.getChildren().iterator();
                                     Set<String> dateSet = new HashSet<>();
+
+                                    // iterates over the dates and sends them to setDates() method to set an icon in the calendar view
                                     while(itr.hasNext()) {
                                         String date = ((DataSnapshot)itr.next()).getValue().toString();
                                         Log.d(TAG, "onDataChange: ----------------------------------------------------------" + date);
@@ -171,6 +184,7 @@ public class Roster extends Fragment {
                                     }
 
                                     try {
+                                        // sends sates for icons to be reflected in calendar view
                                         setDates(dateSet, id);
                                     } catch (ParseException e) {
                                         e.printStackTrace();
@@ -192,27 +206,29 @@ public class Roster extends Fragment {
 
             }
         });
-
-
     }
 
+    // Receives dates retrieved from the db
+    // convertxs them to calendar format
+    // sets the dates as new events with an icon on the calendar view
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void setDates(Set<String> dates, String id) throws ParseException {
 
-        List<EventDay> events = new ArrayList<>();
+        // loops over multiple dates and sets event with icon in calendar view
         for(String date : dates) {
+
+            //converts date to calendar format
             String toConvert = date;
-            SimpleDateFormat sdf = new SimpleDateFormat("dd-mm-yyyy");
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
             Date foramttedDate = sdf.parse(toConvert);
             Calendar cal = Calendar.getInstance();
             cal.setTime(foramttedDate);
+
+            // sets events with icon in the calendarView
             events.add(new EventDay(cal, R.drawable.murrays_normal));
+            calendarView.setEvents(events);
         }
-
         Log.d(TAG, "setDates: --------------------------------------------- " + events);
-
-        calendarView.setEvents(events);
-
     }
 
     // Alert dialog shows list of names to set dates for, click one to choose
@@ -266,6 +282,8 @@ public class Roster extends Fragment {
     }
 
     // ref: https://github.com/Applandeo/Material-Calendar-View
+    // shows picker to select dates for specific member
+    // Dates saved when saveDates() method invoked
     private void showDatePickerDialog() {
 
         OnSelectDateListener listener = new OnSelectDateListener() {
@@ -280,13 +298,14 @@ public class Roster extends Fragment {
         DatePickerBuilder builder = new DatePickerBuilder(getContext(), listener)
                 .pickerType(CalendarView.MANY_DAYS_PICKER)
                 .selectionColor(R.color.colorPrimary)
+                .setTodayLabelColor(R.color.colorPrimary)
                 .headerColor(R.color.colorPrimary);
 
         DatePicker datePicker = builder.build();
         datePicker.show();
     }
 
-    // gets did location and time data from db
+    // gets gig location and time data from db
     // puts the data into alert dialog to be selected by user
     private void selectGigAndTime() {
 
@@ -296,10 +315,12 @@ public class Roster extends Fragment {
         gigRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
                 if(dataSnapshot.exists()) {
                     Iterator iterator = dataSnapshot.getChildren().iterator();
                     final Set<String> gigNameSet = new HashSet<>();
 
+                    // iterates over gigs in list and adds them to set
                     while (iterator.hasNext()) {
                         String id = ((DataSnapshot)iterator.next()).getKey();
                         String gigName = dataSnapshot.child(id).getValue().toString();
@@ -307,8 +328,11 @@ public class Roster extends Fragment {
                         gigNameSet.add(gigName);
                     }
 
+                    // gigList array updated with gigs
                     gigList.clear();
                     gigList.addAll(gigNameSet);
+
+                    // adapter sets them in the alert dialog
                     gigAdapter.notifyDataSetChanged();
                 }
             }
@@ -326,12 +350,17 @@ public class Roster extends Fragment {
         builder.setAdapter(gigAdapter, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+
+                // gets the selected gig from user
                 final String gigChosen = gigAdapter.getItem(which);
 
+                // confirms to user their selection in another dialog
                 AlertDialog.Builder builderInner = new AlertDialog.Builder(getActivity());
                 builderInner.setMessage(gigChosen);
                 builderInner.setTitle("You selected:");
 
+                // confirmed 'ok' clicked: gig location and time saved
+                // dates are then selected by user in the showDatePickerDialog() method
                 builderInner.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -351,6 +380,7 @@ public class Roster extends Fragment {
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void saveDates() {
 
+        // hashmap to hold the key and date value
         HashMap<String, Object> rosterMap = new HashMap<>();
         Calendar cal;
         for(int i = 0; i < selectedDates.size(); i++) {
@@ -369,18 +399,19 @@ public class Roster extends Fragment {
             rosterMap.put(ref.getKey(), dateToSave);
         }
 
-        // svaes dates to DB under the user id and the gig location/time
+        // saves dates to DB under the user id and the gig location/time
         rootRef.child("Roster").child(memberChosenID).child(chosenGigAndTime)
                 .updateChildren(rosterMap)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
+
+                        // alerts user dates saved successfully
                         if(task.isSuccessful()) {
                             Toast.makeText(getContext(), "Dates successfully saved for " + memberChosen, Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
-
     }
 
     // get the list of contacts user has
@@ -391,6 +422,7 @@ public class Roster extends Fragment {
         contactsRef.child(currentUID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
                 if(dataSnapshot.exists()) {
 
                     // Sets are populated with db data: names and corresponding ids of the contacts to the currentUID
