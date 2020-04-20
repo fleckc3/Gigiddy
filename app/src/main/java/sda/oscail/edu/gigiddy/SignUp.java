@@ -69,7 +69,7 @@ public class SignUp extends AppCompatActivity {
             }
         };
         span.setSpan(clickSpan, 18, bottomeText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        span.setSpan(new ForegroundColorSpan(Color.parseColor("#EC008C")), 18, bottomeText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        span.setSpan(new ForegroundColorSpan(Color.parseColor("#000000")), 18, bottomeText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override

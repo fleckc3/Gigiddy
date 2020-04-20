@@ -73,7 +73,7 @@ public class Login extends AppCompatActivity {
             }
         };
         span.setSpan(clickSpan, 14, bottomeText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        span.setSpan(new ForegroundColorSpan(Color.parseColor("#EC008C")), 14, bottomeText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        span.setSpan(new ForegroundColorSpan(Color.parseColor("#000000")), 14, bottomeText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
 
         // Checks if user is logged in already or not

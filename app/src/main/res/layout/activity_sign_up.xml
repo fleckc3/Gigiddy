@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".SignUp"
-    android:background="@drawable/login_bg"
+    android:background="@drawable/login_bg_dark"
     android:orientation="vertical">
 
     <ImageView
@@ -13,11 +13,13 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="82dp"
+        android:scaleX="0.70"
+        android:scaleY="0.70"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/gigiddy_logo" />
+        app:srcCompat="@drawable/gigiddy_green_black" />
 
     <EditText
         android:id="@+id/email"
@@ -27,11 +29,11 @@
         android:layout_marginTop="104dp"
         android:layout_marginEnd="32dp"
         android:autofillHints=""
-        android:backgroundTint="#EC008C"
+        android:backgroundTint="@color/colorPrimary"
         android:ems="10"
         android:hint="@string/hint_email"
+        android:textColorHint="#FFFFFF"
         android:inputType="textEmailAddress"
-        android:textColor="#000000"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -44,10 +46,10 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="48dp"
         android:layout_marginEnd="32dp"
-        android:autofillHints=""
-        android:backgroundTint="#EC008C"
+        android:backgroundTint="@color/colorPrimary"
         android:ems="10"
         android:hint="@string/hint_password"
+        android:textColorHint="#FFFFFF"
         android:inputType="textPassword"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -58,7 +60,6 @@
         android:id="@+id/textView3"
         android:layout_width="219dp"
         android:layout_height="47dp"
-        android:layout_marginTop="20dp"
         android:text="@string/register"
         android:textAlignment="center"
         android:textColor="#FFFFFF"
@@ -70,13 +71,15 @@
 
     <TextView
         android:id="@+id/textView4"
-        android:layout_width="317dp"
-        android:layout_height="32dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginBottom="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="8dp"
         android:clickable="true"
+        android:textColor="#595959"
         android:text="@string/member_login"
-        android:textSize="16sp"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -86,7 +89,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="28dp"
-        android:backgroundTint="#EC008C"
+        android:backgroundTint="@color/colorPrimary"
         android:text="@string/btn_register"
         android:textColor="#FFFFFF"
         app:layout_constraintEnd_toStartOf="@+id/textView5"
@@ -101,7 +104,8 @@
         android:layout_marginTop="41dp"
         android:layout_marginEnd="32dp"
         android:text="@string/need_help"
-        android:textColor="#EC008C"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/password" />
 

@@ -6,7 +6,7 @@
     android:background="@color/colorPrimaryDark"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
-    app:contentInsetStart="50dp"
+    app:contentInsetStart="54dp"
     android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
     <ImageView
@@ -14,7 +14,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="6dp"
+        android:layout_marginBottom="6dp"
         android:contentDescription="TODO"
-        app:srcCompat="@drawable/gigiddy" />
+        app:srcCompat="@drawable/gigiddy_green" />
 
 </androidx.appcompat.widget.Toolbar>

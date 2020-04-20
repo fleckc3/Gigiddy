@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Login"
-    android:background="@drawable/login_bg"
+    android:background="@drawable/login_bg_dark"
     android:orientation="vertical">
 
     <ImageView
@@ -13,11 +13,13 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="82dp"
+        android:scaleX="0.70"
+        android:scaleY="0.70"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/gigiddy_logo" />
+        app:srcCompat="@drawable/gigiddy_green_black" />
 
     <EditText
         android:id="@+id/email"
@@ -27,11 +29,11 @@
         android:layout_marginTop="104dp"
         android:layout_marginEnd="32dp"
         android:autofillHints=""
-        android:backgroundTint="#EC008C"
+        android:backgroundTint="@color/colorPrimary"
         android:ems="10"
         android:hint="@string/hint_email"
         android:inputType="textEmailAddress"
-        android:textColor="#000000"
+        android:textColorHint="#FFFFFF"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -45,9 +47,10 @@
         android:layout_marginTop="48dp"
         android:layout_marginEnd="32dp"
         android:autofillHints=""
-        android:backgroundTint="#EC008C"
+        android:backgroundTint="@color/colorPrimary"
         android:ems="10"
         android:hint="@string/hint_password"
+        android:textColorHint="#FFFFFF"
         android:inputType="textPassword"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -58,7 +61,6 @@
         android:id="@+id/textView3"
         android:layout_width="219dp"
         android:layout_height="47dp"
-        android:layout_marginTop="20dp"
         android:text="@string/welcome_back"
         android:textColor="#FFFFFF"
         android:textSize="32sp"
@@ -70,15 +72,18 @@
     <TextView
         android:id="@+id/textView4"
         android:layout_width="match_parent"
-        android:layout_height="33dp"
-        android:layout_margin="16dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="8dp"
         android:clickable="true"
+        android:focusable="true"
         android:text="@string/sign_up"
-        android:textSize="16sp"
+        android:textSize="20sp"
+        android:textColor="#595959"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:focusable="true" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.gms.common.internal.SignInButtonImpl
         android:id="@+id/btn_login"
@@ -86,7 +91,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="28dp"
-        android:backgroundTint="#EC008C"
+        android:backgroundTint="@color/colorPrimary"
         android:text="@string/login_btn"
         android:textColor="#FFFFFF"
         app:layout_constraintEnd_toStartOf="@+id/textView5"
@@ -103,7 +108,8 @@
         android:layout_marginTop="41dp"
         android:layout_marginEnd="32dp"
         android:text="@string/need_help"
-        android:textColor="#EC008C"
+        android:textColor="#FFFF"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/password" />
 

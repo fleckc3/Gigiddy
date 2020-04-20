@@ -2,8 +2,9 @@
 <!--    ref: https://www.youtube.com/watch?v=s01G12JAOFw&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=49-->
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <solid android:color="#FFB3F4"></solid>
-    <corners android:radius="15dp"></corners>
+    <solid android:color="#94D3A3"></solid>
+    <corners android:radius="15dp"
+        android:topRightRadius="0dp"></corners>
 
 
 </shape>
