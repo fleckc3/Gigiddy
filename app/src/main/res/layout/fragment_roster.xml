@@ -31,17 +31,16 @@
 
         <Button
             android:id="@+id/set_dates"
-            android:layout_width="wrap_content"
+            android:layout_width="136dp"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/colorPrimary"
             android:layout_marginTop="10dp"
+            android:layout_marginEnd="16dp"
+            android:backgroundTint="@color/colorPrimary"
             android:enabled="false"
-            android:text="Set Dates"
+            android:text="@string/set_dates"
             android:textColor="#FFFFFF"
-            android:textStyle="bold"
             android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/member_chosen" />
 
         <TextView
@@ -50,7 +49,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:background="@drawable/rectangle"
-            android:elevation="5dp"
+            android:elevation="2dp"
             android:paddingLeft="10dp"
             android:paddingTop="6dp"
             android:paddingRight="10dp"
@@ -59,8 +58,7 @@
             android:textSize="20sp"
             android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.136"
-            app:layout_constraintStart_toEndOf="@+id/select_member"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/calendarView" />
 
         <Button
@@ -68,12 +66,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="10dp"
+            android:backgroundTint="#616161"
             android:text="@string/member"
-            android:textColor="@color/colorPrimary"
-            android:textSize="13sp"
+            android:textColor="#FFFFFF"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/calendarView" />
+            app:layout_constraintTop_toBottomOf="@+id/member_chosen" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

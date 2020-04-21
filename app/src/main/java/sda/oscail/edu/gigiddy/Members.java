@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -82,6 +83,8 @@ public class Members extends Fragment {
             // retrieves the user info and binds them to the fields in each view in recycler view
             @Override
             protected void onBindViewHolder(@NonNull final MembersViewHolder membersViewHolder, int i, @NonNull Contacts contacts) {
+
+                membersViewHolder.itemView.findViewById(R.id.chat_btn).setVisibility(View.VISIBLE);
 
                 // gets the string ref of the user ID at each position 'i' in the list
                 final String usersIDs = getRef(i).getKey();
@@ -171,6 +174,7 @@ public class Members extends Fragment {
 
         TextView userName, userStatus;
         CircleImageView profileImage;
+        Button chatBtn;
 
         public MembersViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -178,6 +182,7 @@ public class Members extends Fragment {
             userName = itemView.findViewById(R.id.user_profile_name);
             userStatus = itemView.findViewById(R.id.user_status);
             profileImage = itemView.findViewById(R.id.user_profile_image);
+            chatBtn = itemView.findViewById(R.id.chat_btn);
 
         }
     }

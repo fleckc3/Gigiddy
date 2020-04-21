@@ -31,4 +31,11 @@
     <string name="send_message_request_btn">Send Friend Request</string>
     <string name="cancel_chat_request">Cancel Friend Request</string>
     <string name="member">Select Member</string>
+    <string name="new_group">New Group</string>
+    <string name="set_dates">Set Dates</string>
+    <string name="accept_btn">Accept</string>
+    <string name="cancel_btn">Cancel</string>
+    <string name="chat_btn">Chat</string>
+    <string name="user_status">user status</string>
+    <string name="user_name">user name</string>
 </resources>

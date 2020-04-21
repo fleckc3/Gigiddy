@@ -137,6 +137,7 @@ public class Profile extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+
                 // if it is in db then it gets the state
                 if(dataSnapshot.hasChild(receiverUserId)) {
 

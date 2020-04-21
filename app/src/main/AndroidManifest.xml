@@ -16,7 +16,6 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:label">
-        <activity android:name=".SetRoster"></activity>
         <activity
             android:name=".PrivateChat"
             android:parentActivityName=".MainActivity" />
@@ -41,7 +40,6 @@
             android:parentActivityName=".MainActivity" />
         <activity android:name=".SignUp" />
         <activity android:name=".Login" />
-        <activity android:name=".DateSwap" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -145,8 +145,8 @@ public class CheckRequests extends AppCompatActivity {
                                             @Override
                                             public void onClick(View v) {
                                                 CharSequence options[] = new CharSequence[] {
-                                                        "Accept",
-                                                        "Cancel"
+                                                        "Accept Request",
+                                                        "Cancel Request"
                                                 };
 
                                                 AlertDialog.Builder builder = new AlertDialog.Builder(CheckRequests.this);
