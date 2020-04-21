@@ -153,7 +153,9 @@ public class Settings extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+                        // checks db id the reference exists
                         if(dataSnapshot.exists() && dataSnapshot.hasChild("name") && dataSnapshot.hasChild("status") && dataSnapshot.hasChild("image")) {
+
                             String getUsername = dataSnapshot.child("name").getValue().toString();
                             String getUserStatus = dataSnapshot.child("status").getValue().toString();
                             String getUserImage = dataSnapshot.child("image").getValue().toString();

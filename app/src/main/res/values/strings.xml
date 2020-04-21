@@ -38,4 +38,6 @@
     <string name="chat_btn">Chat</string>
     <string name="user_status">user status</string>
     <string name="user_name">user name</string>
+    <string name="welcome_to_gigiddy">Welcome to Gigiddy</string>
+    <string name="username_placeh">username_placeholder</string>
 </resources>

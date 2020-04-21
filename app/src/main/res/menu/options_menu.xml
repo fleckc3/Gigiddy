@@ -15,7 +15,7 @@
 
     </item>
     <item
-        android:title="Settings"
+        android:title="Profile"
         android:id="@+id/settings_option"
         app:showAsAction="never">
 
