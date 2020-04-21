@@ -16,6 +16,7 @@ import android.graphics.LinearGradient;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -66,9 +67,7 @@ public class PrivateChat extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_private_chat);
-
 
         // Initialise fields
         userImage = findViewById(R.id.private_chat_profile_image);
@@ -88,13 +87,9 @@ public class PrivateChat extends AppCompatActivity {
         dbRootRef = FirebaseDatabase.getInstance().getReference();
 
         // Get user data from members intent
-
-
-            messageReceiverId = getIntent().getExtras().get("user_id").toString();
-            messageReceiverName = getIntent().getExtras().get("user_name").toString();
-            otherUserProfileImage = getIntent().getExtras().get("user_image").toString();
-
-
+        messageReceiverId = getIntent().getExtras().get("user_id").toString();
+        messageReceiverName = getIntent().getExtras().get("user_name").toString();
+        otherUserProfileImage = getIntent().getExtras().get("user_image").toString();
 
         // set custom action bar
         privateChatToolbar = findViewById(R.id.private_chat_bar);
@@ -104,12 +99,14 @@ public class PrivateChat extends AppCompatActivity {
         actionBar.setDisplayShowCustomEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
+        // sets the custom bar layout with name and username
         LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View actionBarView = layoutInflater.inflate(R.layout.private_chat_bar, null);
         actionBar.setCustomView(actionBarView);
 
         Log.d(TAG, " PRIVATE CHAT /////////////////////////////////// ------------------------------------------ " +otherUserProfileImage);
 
+        // sets the profile image of user
         Glide.with(this)
                 .load(otherUserProfileImage)
                 .placeholder(R.drawable.profile_image)
@@ -117,13 +114,13 @@ public class PrivateChat extends AppCompatActivity {
         // set user data in custom toolbar fields
         userName.setText(messageReceiverName);
 
+        // send message logic called
         sendMessageBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 sendMessage();
             }
         });
-
     }
 
     // goes back to fragment that calls this activity
