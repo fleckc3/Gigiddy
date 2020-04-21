@@ -23,6 +23,7 @@ import android.provider.MediaStore;
 import android.system.ErrnoException;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -132,6 +133,17 @@ public class Settings extends AppCompatActivity {
                 startActivity(getPicIntent);
             }
         });
+    }
+
+    // goes back to fragment that calls this activity
+    // ref: https://stackoverflow.com/questions/31491093/how-to-go-back-to-previous-fragment-from-activity
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     // retrieve user info from db and storage

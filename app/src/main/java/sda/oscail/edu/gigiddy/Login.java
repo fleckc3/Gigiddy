@@ -52,14 +52,14 @@ public class Login extends AppCompatActivity {
         btnLogin = findViewById(R.id.btn_login);
         register = findViewById(R.id.textView4);
 
-
         // clickable span of text at bottom
         // ref: https://stackoverflow.com/questions/10696986/how-to-set-the-part-of-the-text-view-is-clickable
         String bottomeText = "Not a member? Click to Signup!";
-
         register.setMovementMethod(LinkMovementMethod.getInstance());
         register.setText(bottomeText, TextView.BufferType.SPANNABLE);
         Spannable span = (Spannable) register.getText();
+
+        // sets clickable text to specified format and opens login activity
         ClickableSpan clickSpan = new ClickableSpan() {
             // ref: https://stackoverflow.com/questions/16007147/how-to-get-rid-of-the-underline-in-a-spannable-string-with-a-clickable-object
             @Override
@@ -80,7 +80,9 @@ public class Login extends AppCompatActivity {
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+
                 FirebaseUser mUser = mAuth.getCurrentUser();
+
                 if (mUser != null) {
                     Toast.makeText(Login.this, "You are logged in", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(Login.this, MainActivity.class);
@@ -91,7 +93,6 @@ public class Login extends AppCompatActivity {
             }
         };
 
-
         //Login button onClickListener
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -99,32 +100,44 @@ public class Login extends AppCompatActivity {
                 String email = emailId.getText().toString();
                 String pwd = password.getText().toString();
 
+                // if input fields empty checks
                 if (email.isEmpty()) {
                     emailId.setError("Please enter email id");
                     emailId.requestFocus();
+
                 } else if (pwd.isEmpty()) {
                     password.setError("PLease enter your password");
                     password.requestFocus();
+
                 } else if (email.isEmpty() && pwd.isEmpty()) {
                     Toast.makeText(Login.this, "Fields Empty", Toast.LENGTH_SHORT).show();
+
+                // if the fields are not empty log the user on and send to mainactivity
                 } else if (!(email.isEmpty() && pwd.isEmpty())) {
+
+                    // check db for email and password match
                     mAuth.signInWithEmailAndPassword(email, pwd).addOnCompleteListener(Login.this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
+
+                            // if sinin unsuccessful alert the user
                             if (!task.isSuccessful()) {
                                 Toast.makeText(Login.this, "Login Error, Please login again", Toast.LENGTH_SHORT).show();
+
+                            // if signin worked then go to mainactivity
                             } else {
                                 Intent toMainActivity = new Intent(Login.this, MainActivity.class);
                                 startActivity(toMainActivity);
                             }
                         }
                     });
+
+                // alert user error occurred
                 } else {
                     Toast.makeText(Login.this, "Error Occurred!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
-
     }
 
     // checks auth state as soon as app opens

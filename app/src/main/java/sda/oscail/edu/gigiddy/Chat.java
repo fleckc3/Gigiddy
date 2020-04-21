@@ -17,8 +17,10 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -52,13 +54,12 @@ public class Chat extends Fragment {
         // Required empty public constructor
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        // db ref to Groups
         dbRef = FirebaseDatabase.getInstance().getReference().child("Groups");
-
-
 
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_chat, container, false);
@@ -69,8 +70,10 @@ public class Chat extends Fragment {
         arrayAdapter = new ArrayAdapter<String>(root.getContext(), android.R.layout.simple_list_item_1, chatList);
         chatListView.setAdapter(arrayAdapter);
 
+        // gets groups saved in db
         displayChatGroups();
 
+        // started the new chat group logic
         newGroupChatBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -82,12 +85,13 @@ public class Chat extends Fragment {
         chatListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                // gets chat name selected
                 String currentChatName = parent.getItemAtPosition(position).toString();
 
                 Intent chatIntent = new Intent(getContext(), GroupChat.class);
                 chatIntent.putExtra("chat_name", currentChatName);
                 startActivity(chatIntent);
-
             }
         });
 

@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentManager;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.DialogInterface;
@@ -23,6 +24,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.Objects;
+
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
@@ -30,8 +33,7 @@ public class MainActivity extends AppCompatActivity {
     // View name of the header title. Used for activity scene transitions
     public static final String VIEW_NAME_HEADER_TITLE = "detail:header:title";
     ViewPager viewPager;
-
-
+    private String fromLogin;
 
     private FirebaseAuth mAuth;
     private FirebaseUser mUser;
@@ -43,21 +45,21 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Firebase auth and db references
         mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();
         dbRef = FirebaseDatabase.getInstance().getReference();
 
-
+        // Checks if user not signed in....
         if (mUser == null) {
-            // Not signed in, launch sign in activity
+            // ....Not signed in, launch sign in activity
             Intent login = new Intent(this, Login.class);
             startActivity(login);
+
+        //...if prev activity was login then welcome the user
         } else {
             Toast.makeText(MainActivity.this, "Welcome " + mUser.getEmail(), Toast.LENGTH_SHORT).show();
-
         }
-
-
 
         //set the toolbar we have overridden
         Toolbar toolbar = findViewById(R.id.main_toolbar);
@@ -73,12 +75,12 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(viewPager);
     }
 
-
     //reference https://www.youtube.com/watch?v=E-Ri7tK0E5I&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=11
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
 
+        // inflates the menu layout
         getMenuInflater().inflate(R.menu.options_menu, menu);
         return true;
     }
@@ -88,29 +90,41 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         super.onOptionsItemSelected(item);
 
+        // If logout pressed...
         if(item.getItemId() == R.id.logout_option) {
+
+            //....then sign user out and send to main
+            // at main check for signed in will fail which will send to login activity
             FirebaseAuth.getInstance().signOut();
             Intent toMain = new Intent(this, MainActivity.class);
             startActivity(toMain);
         }
 
+        // if settings option pressed...
         if(item.getItemId() == R.id.settings_option) {
+
+            // ....Settings activity opened
             Intent toSettingsActivity = new Intent(this, Settings.class);
             toSettingsActivity.putExtra("from_activity", "main");
             startActivity(toSettingsActivity);
         }
 
+        // if find friends option selected...
         if(item.getItemId() == R.id.find_friends_option) {
+
+            //...then dins friends activity opened
             Intent findMemberActivity = new Intent(MainActivity.this, FindMembers.class);
             startActivity(findMemberActivity);
         }
 
+        // if check requests option selected....
         if(item.getItemId() == R.id.requests_option) {
+
+            // .....then check request activity opened
             Intent checkRequestsIntent = new Intent(MainActivity.this, CheckRequests.class);
             startActivity(checkRequestsIntent);
         }
 
         return true;
     }
-
 }
