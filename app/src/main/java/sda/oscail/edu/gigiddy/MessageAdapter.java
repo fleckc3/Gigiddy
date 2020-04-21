@@ -35,7 +35,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
     public class MessageViewHolder extends RecyclerView.ViewHolder
     {
-        public TextView senderMessageText, receiverMessageText;
+        public TextView senderMessageText, receiverMessageText, receiverName;
         public CircleImageView receiverProfileImage;
 
         public MessageViewHolder(@NonNull View itemView) {
@@ -44,6 +44,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             senderMessageText = itemView.findViewById(R.id.sender_message_text);
             receiverMessageText = itemView.findViewById(R.id.receiver_message_text);
             receiverProfileImage = itemView.findViewById(R.id.message_profile_image);
+            receiverName = itemView.findViewById(R.id.receiver_name);
         }
     }
 
@@ -76,6 +77,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
                 if(dataSnapshot.hasChild("image")) {
                     String receiverImage = dataSnapshot.child("image").getValue().toString();
+                    String name = dataSnapshot.child("name").getValue().toString();
+
+                    holder.receiverName.setText(name);
 
                     Glide.with(holder.receiverProfileImage.getContext())
                             .load(receiverImage)
@@ -95,8 +99,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             holder.receiverMessageText.setVisibility(View.INVISIBLE);
             holder.receiverProfileImage.setVisibility(View.INVISIBLE);
 
+
             // checks who sender is and updates the view to reflect correct layout and design
             if(fromUserID.equals(messageSenderID)) {
+                holder.receiverName.setVisibility(View.INVISIBLE);
                 holder.senderMessageText.setBackgroundResource(R.drawable.sender_messages_layout);
                 holder.senderMessageText.setText(messages.getMessage());
 
@@ -109,17 +115,12 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                 holder.receiverMessageText.setText(messages.getMessage());
             }
         }
-
-
-
     }
-
 
 
     @Override
     public int getItemCount() {
         return userMessagesList.size();
     }
-
 
 }

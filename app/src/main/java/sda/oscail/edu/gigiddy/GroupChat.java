@@ -4,14 +4,19 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CalendarView;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,20 +29,29 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 
 // ref: https://www.youtube.com/watch?v=4RL85tdhCEU&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=18
 public class GroupChat extends AppCompatActivity {
 
+    private static final String TAG = "GroupChat";
+    
     private Toolbar toolbar;
     private ImageButton sendMessaegBtn;
     private EditText messageInput;
     private ScrollView scrollView;
-    private TextView showTextMessages;
+
+    private final List<GroupMessage> messageList = new ArrayList<>();
+    private LinearLayoutManager linearLayoutManager;
+    private GroupMessageAdapter messageAdapter;
+    private RecyclerView groupMessageList;
 
     private String currentChatName;
     private String currentUID, currentUserName, currentDate, currentTime;
@@ -56,7 +70,24 @@ public class GroupChat extends AppCompatActivity {
         currentUID = mAuth.getCurrentUser().getUid();
         dbUserRef = FirebaseDatabase.getInstance().getReference().child("Users");
 
-        //db reference to chat name selected
+        // Initialise fields for message recyclerview and adapter
+        messageAdapter = new GroupMessageAdapter(messageList);
+        groupMessageList = findViewById(R.id.group_messages_list);
+        linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setStackFromEnd(true);
+        groupMessageList.setLayoutManager(linearLayoutManager);
+        groupMessageList.setAdapter(messageAdapter);
+
+        // ref: https://stackoverflow.com/questions/32506759/how-to-push-recyclerview-up-when-keyboard-appear
+        // moves content in recycler view up when keyboard is activated
+        groupMessageList.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                groupMessageList.scrollToPosition(messageList.size()-1);
+            }
+        });
+
+        //db reference to group chat name selected
         dbGroupRef = FirebaseDatabase.getInstance().getReference().child("Groups").child(currentChatName);
 
         //initialise toolbar with current chat name
@@ -66,20 +97,9 @@ public class GroupChat extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-
         //initialise chat view objects
         sendMessaegBtn = findViewById(R.id.send_message_btn);
         messageInput = findViewById(R.id.input_message);
-        scrollView = findViewById(R.id.scroll_view);
-        showTextMessages = findViewById(R.id.chat_text_display);
-
-        // focus on most recent message at bottom
-        scrollView.post(new Runnable() {
-            @Override
-            public void run() {
-                scrollView.fullScroll(View.FOCUS_DOWN);
-            }
-        });
 
         // alert for chat name user is in
         Toast.makeText(this, currentChatName, Toast.LENGTH_SHORT).show();
@@ -93,7 +113,7 @@ public class GroupChat extends AppCompatActivity {
                 saveMessageToDB();
 
                 messageInput.setText("");
-                scrollView.fullScroll(scrollView.FOCUS_DOWN);
+               // scrollView.fullScroll(scrollView.FOCUS_DOWN);
             }
         });
     }
@@ -114,15 +134,25 @@ public class GroupChat extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+        // ref: https://stackoverflow.com/questions/26580723/how-to-scroll-to-the-bottom-of-a-recyclerview-scrolltoposition-doesnt-work
+        groupMessageList.scrollToPosition(messageList.size() - 1);
+
         // checks for group chats saved in db
         dbGroupRef.addChildEventListener(new ChildEventListener() {
+
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
+                GroupMessage messages = dataSnapshot.getValue(GroupMessage.class);
+
+                messageList.add(messages);
+                Log.d(TAG, "//////////////////////////------------------building the messageList: " + messageList);
+                messageAdapter.notifyDataSetChanged();
+
                 // if groups exist in db then display them
-                if(dataSnapshot.exists()) {
-                    displayChatMessages(dataSnapshot);
-                }
+//                if(dataSnapshot.exists()) {
+//                    displayChatMessages(dataSnapshot);
+//                }
             }
 
             @Override
@@ -174,6 +204,7 @@ public class GroupChat extends AppCompatActivity {
             // creates map of message info
             HashMap<String, Object> messageInfoMap = new HashMap<>();
             messageInfoMap.put("name", currentUserName);
+            messageInfoMap.put("id", currentUID);
             messageInfoMap.put("message", message);
             messageInfoMap.put("date", currentDate);
             messageInfoMap.put("time", currentTime);
@@ -181,6 +212,7 @@ public class GroupChat extends AppCompatActivity {
             // adds the message to to the db under that group message
             dbGroupMessageKey.updateChildren(messageInfoMap);
         }
+        groupMessageList.scrollToPosition(messageList.size() - 1);
     }
 
     // gets info of the user who sent message
@@ -202,29 +234,57 @@ public class GroupChat extends AppCompatActivity {
         });
     }
 
-    // ref: https://www.youtube.com/watch?v=uiR0U6Gs9e8&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=21
-    // displays chat messages from the db
-    private void displayChatMessages(DataSnapshot dataSnapshot) {
-        Iterator iterator = dataSnapshot.getChildren().iterator();
-
-        // iterates over each entry in the db -> sets info in the correct view
-        while(iterator.hasNext()) {
-            String chatDate = (String) ((DataSnapshot)iterator.next()).getValue();
-            String chatMessage = (String) ((DataSnapshot)iterator.next()).getValue();
-            String chatName = (String) ((DataSnapshot)iterator.next()).getValue();
-            String chatTime= (String) ((DataSnapshot)iterator.next()).getValue();
-
-            // sets the messages and associated info in the group chat view
-            showTextMessages.append(chatName + " :\n" + chatMessage + "\n" + chatTime + "    " + chatDate + "\n\n\n");
-            scrollView.fullScroll(scrollView.FOCUS_DOWN);
-        }
-
-        // sets the scrollable view to the newest message at bottom
-        scrollView.post(new Runnable() {
-            @Override
-            public void run() {
-                scrollView.fullScroll(View.FOCUS_DOWN);
-            }
-        });
-    }
+//    // ref: https://www.youtube.com/watch?v=uiR0U6Gs9e8&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=21
+//    // displays chat messages from the db
+//    private void displayChatMessages(DataSnapshot dataSnapshot) {
+//        Iterator iterator = dataSnapshot.getChildren().iterator();
+//
+//        // iterates over each entry in the db -> sets info in the correct view
+//        while(iterator.hasNext()) {
+//            String chatDate = (String) ((DataSnapshot)iterator.next()).getValue();
+//            String chatMessage = (String) ((DataSnapshot)iterator.next()).getValue();
+//            String chatName = (String) ((DataSnapshot)iterator.next()).getValue();
+//            String chatTime= (String) ((DataSnapshot)iterator.next()).getValue();
+//
+//            // sets the messages and associated info in the group chat view
+//
+//            if(chatName.equals(currentUserName)) {
+//                otherUserName.setVisibility(View.INVISIBLE);
+//                otherDateTime.setVisibility(View.INVISIBLE);
+//                otherSenderText.setVisibility(View.INVISIBLE);
+//
+//                currentUserText.setVisibility(View.VISIBLE);
+//                currentUserDateTime.setVisibility(View.VISIBLE);
+//                currentUserText.setText(chatMessage);
+//                currentUserDateTime.setText(chatDate + " - " + chatTime);
+//
+//            } else {
+//                currentUserText.setVisibility(View.INVISIBLE);
+//                currentUserDateTime.setVisibility(View.INVISIBLE);
+//
+//                otherUserName.setVisibility(View.VISIBLE);
+//                otherDateTime.setVisibility(View.VISIBLE);
+//                otherSenderText.setVisibility(View.VISIBLE);
+//                otherUserName.setText(chatName);
+//                otherDateTime.setText(chatDate + " - " + chatTime);
+//                otherSenderText.setText(chatMessage);
+//            }
+//
+//            scrollView.fullScroll(scrollView.FOCUS_DOWN);
+//        }
+//
+//        // sets the scrollable view to the newest message at bottom
+//        scrollView.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                scrollView.fullScroll(View.FOCUS_DOWN);
+//            }
+//        });
+//    }
 }
+
+//        otherUserName = findViewById(R.id.receiver_user_name);
+//        otherDateTime = findViewById(R.id.receiver_message_date_time);
+//        otherSenderText = findViewById(R.id.receiver_message_text);
+//        currentUserDateTime = findViewById(R.id.sender_message_date_time);
+//        currentUserText = findViewById(R.id.sender_message_text);

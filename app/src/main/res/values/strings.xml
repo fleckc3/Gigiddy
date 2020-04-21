@@ -40,4 +40,8 @@
     <string name="user_name">user name</string>
     <string name="welcome_to_gigiddy">Welcome to Gigiddy</string>
     <string name="username_placeh">username_placeholder</string>
+    <string name="sender_messages_here">sender messages here</string>
+    <string name="username_here">username here</string>
+    <string name="date_and_time">date and time</string>
+    <string name="sender_message_go_here">sender message go here</string>
 </resources>

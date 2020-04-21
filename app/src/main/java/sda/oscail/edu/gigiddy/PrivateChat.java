@@ -81,6 +81,15 @@ public class PrivateChat extends AppCompatActivity {
         userMessagesList.setLayoutManager(linearLayoutManager);
         userMessagesList.setAdapter(messageAdapter);
 
+        // ref: https://stackoverflow.com/questions/32506759/how-to-push-recyclerview-up-when-keyboard-appear
+        // moves content in recycler view up when keyboard is activated
+        userMessagesList.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+               userMessagesList.scrollToPosition(messagesList.size()-1);
+            }
+        });
+
         // Firebase refs
         mAuth = FirebaseAuth.getInstance();
         senderUserId = mAuth.getUid();
@@ -138,6 +147,9 @@ public class PrivateChat extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+        // ref: https://stackoverflow.com/questions/26580723/how-to-scroll-to-the-bottom-of-a-recyclerview-scrolltoposition-doesnt-work
+        userMessagesList.scrollToPosition(messagesList.size() - 1);
+
         dbRootRef.child("Messages").child(senderUserId).child(messageReceiverId)
                 .addChildEventListener(new ChildEventListener() {
                     @Override
@@ -146,7 +158,7 @@ public class PrivateChat extends AppCompatActivity {
 
 
                         messagesList.add(messages);
-
+                        Log.d(TAG, "//////////////////////////------------------- message list: " + messagesList);
                         messageAdapter.notifyDataSetChanged();
                     }
 
@@ -229,7 +241,8 @@ public class PrivateChat extends AppCompatActivity {
                 }
             });
 
-
+            // ref: https://stackoverflow.com/questions/26580723/how-to-scroll-to-the-bottom-of-a-recyclerview-scrolltoposition-doesnt-work
+            userMessagesList.scrollToPosition(messagesList.size() - 1);
 
         }
     }

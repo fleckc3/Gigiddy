@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
             //....then sign user out and send to main
             // at main check for signed in will fail which will send to login activity
             FirebaseAuth.getInstance().signOut();
-            Intent toMain = new Intent(this, MainActivity.class);
+            Intent toMain = new Intent(this, Login.class);
             startActivity(toMain);
         }
 

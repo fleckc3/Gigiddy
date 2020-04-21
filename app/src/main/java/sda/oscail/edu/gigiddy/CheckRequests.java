@@ -137,7 +137,7 @@ public class CheckRequests extends AppCompatActivity {
                                             final String requestSenderImage = dataSnapshot.child("image").getValue().toString();
 
                                             // variables info passed into the viewholder fields
-                                            Glide.with(requestViewHolder.profileImage.getContext())
+                                            Glide.with(requestViewHolder.profileImage.getContext().getApplicationContext())
                                                     .load(requestSenderImage)
                                                     .placeholder(R.drawable.profile_image)
                                                     .into(requestViewHolder.profileImage);

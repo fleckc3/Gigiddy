@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -26,6 +27,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 // ref: https://www.youtube.com/watch?v=fatkPOq4AlA&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=33
 public class Profile extends AppCompatActivity {
+    private static final String TAG = "Profile";
 
     private String receiverUserId, currentState, senderUserId, senderUserName;
     private Toolbar toolbar;
@@ -86,6 +88,46 @@ public class Profile extends AppCompatActivity {
         getUserInfo();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        checkRelationshipStatus();
+    }
+
+    private void checkRelationshipStatus() {
+
+        dbChatReqRef.child(senderUserId).child(receiverUserId).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.exists()) {
+
+                    dbContactsRef.child(senderUserId).child(receiverUserId).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if(!dataSnapshot.exists()) {
+                                currentState = "new";
+                                sendMessageBtn.setText("Send Friend Request");
+                                cancelRequestBtn.setVisibility(View.INVISIBLE);
+                                cancelRequestBtn.setEnabled(false);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     // gets the info of the profile clicked on
     private void getUserInfo() {
 
@@ -137,7 +179,6 @@ public class Profile extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-
                 // if it is in db then it gets the state
                 if(dataSnapshot.hasChild(receiverUserId)) {
 
@@ -165,6 +206,7 @@ public class Profile extends AppCompatActivity {
                     }
                 } else {
 
+                    Log.d(TAG, "//////////////////////////////------------ if ds chat req snapshot does not exist");
                     // checks if they are friends already
                     dbContactsRef.child(senderUserId)
                             .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -173,6 +215,8 @@ public class Profile extends AppCompatActivity {
 
                                     // if friends, show button fro removing them from friends list
                                     if(dataSnapshot.hasChild(receiverUserId)) {
+
+                                        Log.d(TAG, "////////////////////////-------------- I am friends with this person");
                                         currentState = "friends";
                                         sendMessageBtn.setText("Remove Contact");
                                     }
