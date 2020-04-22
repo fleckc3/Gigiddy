@@ -37,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private FirebaseUser mUser;
-    private String mUsername;
     private DatabaseReference dbRef;
 
     @Override

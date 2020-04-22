@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -34,6 +35,7 @@ public class Noticeboard extends Fragment {
 
     private FirebaseAuth mAuth;
     private DatabaseReference userRef;
+    private FirebaseUser mUser;
     private String currentUID, currentUserName;
     private CircleImageView userProfileImage;
     private TextView currentUserNameField, bodyText;
@@ -56,8 +58,17 @@ public class Noticeboard extends Fragment {
 
         // Initialise firebase auth and db references
         mAuth = FirebaseAuth.getInstance();
+        mUser = mAuth.getCurrentUser();
         userRef = FirebaseDatabase.getInstance().getReference().child("Users");
-        currentUID = mAuth.getUid().toString();
+
+
+        if(mUser == null) {
+            Intent login = new Intent(root.getContext(), Login.class);
+            startActivity(login);
+        } else {
+            currentUID = mAuth.getUid().toString();
+        }
+
 
         getUserInfo();
 
@@ -74,19 +85,22 @@ public class Noticeboard extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                // if the current user is in db
-                if(dataSnapshot.exists()) {
+                // ref: https://stackoverflow.com/questions/53693696/you-cannot-start-a-load-on-a-not-yet-attached-view-or-a-fragment-where-getactivi/53693826
+                if(isAdded()) {
+                    // if the current user is in db
+                    if(dataSnapshot.exists() && dataSnapshot.hasChild("name") && dataSnapshot.hasChild("image")) {
 
-                    // ...then grab name and profile image
-                    String name = dataSnapshot.child("name").getValue().toString();
-                    String profileImage = dataSnapshot.child("image").getValue().toString();
+                        // ...then grab name and profile image
+                        String name = dataSnapshot.child("name").getValue().toString();
+                        String profileImage = dataSnapshot.child("image").getValue().toString();
 
-                    // set those variables in their views
-                    currentUserNameField.setText(name);
-                    Glide.with(getActivity())
-                            .load(profileImage)
-                            .placeholder(R.drawable.profile_image)
-                            .into(userProfileImage);
+                        // set those variables in their views
+                        currentUserNameField.setText(name);
+                        Glide.with(getActivity())
+                                .load(profileImage)
+                                .placeholder(R.drawable.profile_image)
+                                .into(userProfileImage);
+                    }
                 }
             }
 

@@ -74,7 +74,7 @@ public class GroupChat extends AppCompatActivity {
         messageAdapter = new GroupMessageAdapter(messageList);
         groupMessageList = findViewById(R.id.group_messages_list);
         linearLayoutManager = new LinearLayoutManager(this);
-        linearLayoutManager.setStackFromEnd(true);
+        linearLayoutManager.setStackFromEnd(false);
         groupMessageList.setLayoutManager(linearLayoutManager);
         groupMessageList.setAdapter(messageAdapter);
 

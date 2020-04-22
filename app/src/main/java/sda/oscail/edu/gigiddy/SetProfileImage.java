@@ -120,6 +120,7 @@ public class SetProfileImage extends AppCompatActivity {
                                                         Toast.makeText(SetProfileImage.this, "Image save in database successfully...", Toast.LENGTH_SHORT).show();
                                                         loadingBar.dismiss();
                                                          Intent goBacktoSettings = new Intent(SetProfileImage.this, Settings.class);
+                                                         goBacktoSettings.putExtra("from_activity", "crop_image");
                                                          startActivity(goBacktoSettings);
                                                     } else {
                                                         String message = task.getException().toString();
@@ -146,6 +147,7 @@ public class SetProfileImage extends AppCompatActivity {
      */
     public void onLoadImageClick(View view) {
         startActivityForResult(getPickImageChooserIntent(), 200);
+
     }
 
     /**
@@ -155,9 +157,6 @@ public class SetProfileImage extends AppCompatActivity {
         Bitmap cropped = mCropImageView.getCroppedImage(500, 500);
         if (cropped != null) {
             mCropImageView.setImageBitmap(cropped);
-            saveImage.setVisibility(View.VISIBLE);
-            saveImage.setClickable(true);
-
         }
     }
 
@@ -185,6 +184,8 @@ public class SetProfileImage extends AppCompatActivity {
                 mCropImageView.setImageUriAsync(imageUri);
             }
         }
+        saveImage.setVisibility(View.VISIBLE);
+        saveImage.setClickable(true);
     }
 
     @Override

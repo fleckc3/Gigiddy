@@ -1,5 +1,6 @@
 package sda.oscail.edu.gigiddy;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,8 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static androidx.constraintlayout.widget.Constraints.TAG;
 
 // ref: https://www.youtube.com/watch?v=n8QWeqeUeA0&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=50
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
@@ -94,25 +97,35 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             }
         });
 
+
+
         // checks message type
         if(fromMessageType.equals("text")) {
-            holder.receiverMessageText.setVisibility(View.INVISIBLE);
-            holder.receiverProfileImage.setVisibility(View.INVISIBLE);
-
 
             // checks who sender is and updates the view to reflect correct layout and design
             if(fromUserID.equals(messageSenderID)) {
+                holder.receiverMessageText.setVisibility(View.INVISIBLE);
+                holder.receiverProfileImage.setVisibility(View.INVISIBLE);
                 holder.receiverName.setVisibility(View.INVISIBLE);
+
+                holder.senderMessageText.setVisibility(View.VISIBLE);
                 holder.senderMessageText.setBackgroundResource(R.drawable.sender_messages_layout);
                 holder.senderMessageText.setText(messages.getMessage());
 
+                Log.d(TAG, "////////////////////////// ------------------------ message is from the ME");
+
             } else {
                 holder.senderMessageText.setVisibility(View.INVISIBLE);
-                holder.receiverProfileImage.setVisibility(View.VISIBLE);
-                holder.receiverMessageText.setVisibility(View.VISIBLE);
 
                 holder.receiverMessageText.setBackgroundResource(R.drawable.receiver_messages_layout);
                 holder.receiverMessageText.setText(messages.getMessage());
+                holder.receiverName.setText(messages.getFrom());
+                holder.receiverProfileImage.setVisibility(View.VISIBLE);
+                holder.receiverMessageText.setVisibility(View.VISIBLE);
+                holder.receiverName.setVisibility(View.VISIBLE);
+
+
+                Log.d(TAG, "////////////////////////////--------------------------- message is from the Other person");
             }
         }
     }

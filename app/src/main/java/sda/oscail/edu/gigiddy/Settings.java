@@ -66,7 +66,7 @@ public class Settings extends AppCompatActivity {
     private String currentUserID;
     private FirebaseAuth mAuth;
     private DatabaseReference dbRef;
-    private String imageUrl;
+    private String imageUrl, setUserType;
     private static String fromActivity;
 
 
@@ -91,7 +91,7 @@ public class Settings extends AppCompatActivity {
         Log.d(TAG, "///////////////// ------------- " +fromActivity);
 
         // If string variable equals regiser then previous activity was the signup activity
-        if(fromActivity.equals("main")) {
+        if(fromActivity.equals("main") || fromActivity.equals("crop_image")) {
 
             toolbar = findViewById(R.id.setting_app_bar);
             toolbar.setVisibility(View.VISIBLE);
@@ -139,9 +139,12 @@ public class Settings extends AppCompatActivity {
     // ref: https://stackoverflow.com/questions/31491093/how-to-go-back-to-previous-fragment-from-activity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            return true;
+
+        if(!fromActivity.equals("crop_image")) {
+            if (item.getItemId() == android.R.id.home) {
+                finish();
+                return true;
+            }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -153,15 +156,17 @@ public class Settings extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                        // checks db id the reference exists
+                        // checks db id the reference exists, three if conditions check in case snapshot doesn't have one of the vlaues
                         if(dataSnapshot.exists() && dataSnapshot.hasChild("name") && dataSnapshot.hasChild("status") && dataSnapshot.hasChild("image")) {
 
+                            // Grabs users details
                             String getUsername = dataSnapshot.child("name").getValue().toString();
                             String getUserStatus = dataSnapshot.child("status").getValue().toString();
                             String getUserImage = dataSnapshot.child("image").getValue().toString();
                             imageUrl = getUserImage;
 
-                            Glide.with(Settings.this)
+                            // sets the details in the views
+                            Glide.with(getApplicationContext())
                                     .load(getUserImage)
                                     .into(userProfileImage);
                             username.setText(getUsername);
@@ -199,6 +204,26 @@ public class Settings extends AppCompatActivity {
         String setUsername = username.getText().toString();
         String setStatus = userStatus.getText().toString();
 
+        if(fromActivity.equals("main") || fromActivity.equals("crop_image")) {
+            DatabaseReference currentUserType = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID).child("user_type");
+            currentUserType.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.exists()) {
+                        setUserType = dataSnapshot.getValue().toString();
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
+
+
+        Log.d(TAG, "////////////////////////////////--------------------- user type = " + setUserType);
+
 
         if(TextUtils.isEmpty(setStatus)) {
             Toast.makeText(this, "Please write a status...", Toast.LENGTH_SHORT).show();
@@ -207,13 +232,22 @@ public class Settings extends AppCompatActivity {
         } else {
 
             HashMap<String, Object> profileMap = new HashMap<>();
-            if(imageUrl != null) {
+            if(imageUrl == null) {
+                imageUrl = "https://firebasestorage.googleapis.com/v0/b/gigiddy-9e0c8.appspot.com/o/Profile%20Images%2Fprofile_image.png?alt=media&token=98a27baf-279f-4ba3-a34f-82308053aed3";
+                profileMap.put("image", imageUrl);
+            } else {
                 profileMap.put("image", imageUrl);
             }
+
+            if(fromActivity.equals("register")) {
+                profileMap.put("user_type", "member");
+            }
+
             profileMap.put("uid", currentUserID);
             profileMap.put("name", setUsername);
             profileMap.put("status", setStatus);
-            profileMap.put("user_type", "member");
+
+
             dbRef.child("Users").child(currentUserID).updateChildren(profileMap)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
