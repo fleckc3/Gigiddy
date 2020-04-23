@@ -58,6 +58,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
@@ -177,6 +178,7 @@ public class Roster extends Fragment {
     public void onStart() {
         super.onStart();
         checkForDates();
+        getContacts();
     }
 
     private void checkForDates() {
@@ -275,7 +277,7 @@ public class Roster extends Fragment {
                 // grabs member name and id chosen
                 final String memberName = adapter.getItem(which);
                 indexOfChosen = adapter.getPosition(memberName);
-                Log.d(TAG, "/////////////////////--------------------------- membername: " + memberName);
+                Log.d(TAG, "/////////////////////--------------------------- membername: " + memberName + " - number: " + indexOfChosen);
 
                 // Lets user know who they have selected
                 AlertDialog.Builder builderInner = new AlertDialog.Builder(getActivity());
@@ -292,6 +294,8 @@ public class Roster extends Fragment {
                         chosenMemberTextView.setText(memberChosen);
                         chosenMemberTextView.setVisibility(View.VISIBLE);
 
+                        Log.d(TAG, "//////////////////////////////--------------------------- list sequence: " + list);
+                        Log.d(TAG, "//////////////////////////////--------------------------- list sequence: " + idList);
                         // chosen id saved to update db with dates
                         memberChosenID = idList.get(indexOfChosen);
                         Log.d(TAG, "/////////////////////////////////////----------------------------------- memberCHosenID: " + memberChosenID);
@@ -454,8 +458,8 @@ public class Roster extends Fragment {
                 if(dataSnapshot.exists()) {
 
                     // Sets are populated with db data: names and corresponding ids of the contacts to the currentUID
-                    final Set<String> setNameList = new HashSet<>();
-                    final Set<String> setIDList = new HashSet<>();
+                    final Set<String> setNameList = new LinkedHashSet<>();
+                    final Set<String> setIDList = new LinkedHashSet<>();
 
                     // Creates itarable object of the contacts to the currentUId
                     Iterator iterator = dataSnapshot.getChildren().iterator();
@@ -463,11 +467,15 @@ public class Roster extends Fragment {
                     // iterates over the children
                     // Grabs name and id of the contact and puts them in their sets
                     while(iterator.hasNext()) {
+
                         String id = ((DataSnapshot)iterator.next()).getKey();
+                        Log.d(TAG, "/////////////////////////////---------------------- id: " + id);
+
                         String name = dataSnapshot.child(id).child("name").getValue().toString();
                         Log.d(TAG, "/////////////////////////////---------------------- name: " + name);
-                        setNameList.add(name);
+
                         setIDList.add(id);
+                        setNameList.add(name);
                     }
 
                     Log.d(TAG, "/////////////////////////////------------------ setNameList items: " + setNameList);
