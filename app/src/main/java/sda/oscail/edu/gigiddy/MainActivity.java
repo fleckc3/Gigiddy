@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private String fromLogin;
 
     private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseUser mUser;
     private DatabaseReference dbRef;
 
@@ -46,19 +47,23 @@ public class MainActivity extends AppCompatActivity {
 
         // Firebase auth and db references
         mAuth = FirebaseAuth.getInstance();
-        mUser = mAuth.getCurrentUser();
         dbRef = FirebaseDatabase.getInstance().getReference();
 
-        // Checks if user not signed in....
-        if (mUser == null) {
-            // ....Not signed in, launch sign in activity
-            Intent login = new Intent(this, Login.class);
-            startActivity(login);
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                if(user == null) {
+                    Intent login = new Intent(MainActivity.this, Login.class);
+                    startActivity(login);
+                    finish();
+                } else {
+                    Toast.makeText(MainActivity.this, "Welcome " + mUser.getEmail(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
 
-        //...if prev activity was login then welcome the user
-        } else {
-            Toast.makeText(MainActivity.this, "Welcome " + mUser.getEmail(), Toast.LENGTH_SHORT).show();
-        }
+
 
         //set the toolbar we have overridden
         Toolbar toolbar = findViewById(R.id.main_toolbar);

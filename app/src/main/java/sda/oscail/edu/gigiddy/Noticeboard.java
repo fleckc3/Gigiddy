@@ -58,21 +58,12 @@ public class Noticeboard extends Fragment {
 
         // Initialise firebase auth and db references
         mAuth = FirebaseAuth.getInstance();
-        mUser = mAuth.getCurrentUser();
+
+
+        currentUID = mAuth.getUid().toString();
         userRef = FirebaseDatabase.getInstance().getReference().child("Users");
 
-
-        if(mUser == null) {
-            Intent login = new Intent(root.getContext(), Login.class);
-            startActivity(login);
-        } else {
-            currentUID = mAuth.getUid().toString();
-        }
-
-
         getUserInfo();
-
-        Log.d(TAG, "////////////////////////////////////----------------------------- current user id = " + currentUID);
 
         return root;
     }
