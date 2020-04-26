@@ -15,24 +15,32 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.squareup.picasso.Picasso;
-
-import org.w3c.dom.Text;
-
 import de.hdodenhof.circleimageview.CircleImageView;
 
-// ref: https://www.youtube.com/watch?v=UTTqzqX9oXQ&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=28
+/**
+ * The FindMembers activity implements a FirebaseRecyclerViewAdapter to get and display all the users who have created accounts with the app.
+ * Their User information are then diplayed using a custom layout. Clicking on an item will start that users Profile activity.
+ *
+ * @author Colin Fleck <colin.fleck@mail.dcu.ie>
+ * @version 1.0
+ * @since 07/04/2020
+ *
+ * ref: https://www.youtube.com/watch?v=UTTqzqX9oXQ&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=28
+ */
 public class FindMembers extends AppCompatActivity {
 
     private Toolbar toolbar;
     private RecyclerView findFriendList;
     private DatabaseReference dbUserRef;
 
+    /**
+     * The onCreate() method sets the activity view and initialises the view objects
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,10 +50,10 @@ public class FindMembers extends AppCompatActivity {
         findFriendList = findViewById(R.id.find_friend_list);
         findFriendList.setLayoutManager(new LinearLayoutManager(this));
 
-
+        // Firebase db ref to Users
         dbUserRef = FirebaseDatabase.getInstance().getReference().child("Users");
 
-        //set back button to mainactivity
+        // Toolbar initialised
         toolbar = findViewById(R.id.app_bar_layout);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -53,8 +61,13 @@ public class FindMembers extends AppCompatActivity {
         getSupportActionBar().setTitle("Find Members");
     }
 
-    // goes back to fragment that calls this activity
-    // ref: https://stackoverflow.com/questions/31491093/how-to-go-back-to-previous-fragment-from-activity
+    /**
+     * This method allows the user to go back to the fragment they were on before they accessed the chat requests activity.
+     * @param item gets the home button pressed
+     * @return item selected
+     *
+     *  ref: https://stackoverflow.com/questions/31491093/how-to-go-back-to-previous-fragment-from-activity
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
@@ -64,27 +77,34 @@ public class FindMembers extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    // ref: https://www.youtube.com/watch?v=h19KeH2Z26I&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=30
+    /**
+     * The onStart() method implements the FirebaseRecyclerViewAdapter when the activity is started
+     *
+     * ref: https://www.youtube.com/watch?v=h19KeH2Z26I&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=30
+     */
     @Override
     protected void onStart() {
         super.onStart();
 
+        // Firebase object queries Users db for all Users sing the Contacts model calss
         FirebaseRecyclerOptions<Contacts> options = new FirebaseRecyclerOptions.Builder<Contacts>()
                 .setQuery(dbUserRef, Contacts.class)
                 .build();
 
+        // Takes the options and passses them into the viewholder and binds the user information to the layout view objects
         FirebaseRecyclerAdapter<Contacts, findMembersViewHolder> adapter = new FirebaseRecyclerAdapter<Contacts, findMembersViewHolder>(options) {
             @Override
             protected void onBindViewHolder(@NonNull findMembersViewHolder findMembersViewHolder, final int i, @NonNull Contacts contacts) {
+
+                // gets username, profile image, and status of the users and passes them into the viewholder
                 findMembersViewHolder.userName.setText(contacts.getName());
                 findMembersViewHolder.userStatus.setText(contacts.getStatus());
-
-
                 Glide.with(findMembersViewHolder.profileImage.getContext())
                         .load(contacts.getImage())
                         .placeholder(R.drawable.profile_image)
                         .into(findMembersViewHolder.profileImage);
 
+                // OnClick calls the profile activity of the user who is clicked on
                 findMembersViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -96,6 +116,7 @@ public class FindMembers extends AppCompatActivity {
                 });
             }
 
+            // Inflates the custom layout for the viewholder
             @NonNull
             @Override
             public findMembersViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -104,23 +125,26 @@ public class FindMembers extends AppCompatActivity {
                 return viewHolder;
             }
         };
-
         findFriendList.setAdapter(adapter);
         adapter.startListening();
     }
 
+    /**
+     * The findMembersViewHolder class declares and intitialises the fields to be set by the adapter
+     */
     public static class findMembersViewHolder extends RecyclerView.ViewHolder {
 
+        // fields declared
         TextView userName, userStatus;
         CircleImageView profileImage;
 
         public findMembersViewHolder(@NonNull View itemView) {
             super(itemView);
 
+            // Initialise fields
             profileImage = itemView.findViewById(R.id.user_profile_image);
             userName = itemView.findViewById(R.id.user_profile_name);
             userStatus = itemView.findViewById(R.id.user_status);
         }
-
     }
 }

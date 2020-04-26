@@ -35,17 +35,36 @@ import java.util.HashMap;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
-// ref: https://www.youtube.com/watch?v=WGOY7Lsac1U&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=41
+/**
+ * The CheckRequests activity implements a FireBaseRecyclerAdapter to grab the current user's
+ * friend requests saved in the Chat Request DB and show them in the activity using a custom layout.
+ * Each item portrays the user who sent the request with their name, picture, and status along with an accept and cancel button.
+ * The current user can then accept or cancel the friend request.
+ *
+ *
+ * @author Colin Fleck <colin.fleck@mail.dcu.ie>
+ * @version 1.0
+ * @since 09/04/2020
+ *
+ *
+ * ref: https://www.youtube.com/watch?v=WGOY7Lsac1U&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=41
+ */
 public class CheckRequests extends AppCompatActivity {
-
     private static final String TAG = "CheckRequests";
+
+    // toolbar and recyclerView declared
     private Toolbar toolbar;
     private RecyclerView requestList;
 
+    // Firebase variables declared
     private DatabaseReference dbRequestRef, dbUsersRef, dbContactsRef;
     private FirebaseAuth mAuth;
     private String currentUserId, currentUserName, senderUserName;
 
+    /**
+     * The onCreate() method creates the activity view. Declared fields are initialised
+     * @param savedInstanceState saves the view current state
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +73,8 @@ public class CheckRequests extends AppCompatActivity {
         // Initialise fields
         requestList = findViewById(R.id.request_list);
         requestList.setLayoutManager(new LinearLayoutManager(this));
+
+        // Sets the toolbar
         toolbar = findViewById(R.id.request_bar_layout);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -67,6 +88,7 @@ public class CheckRequests extends AppCompatActivity {
         dbUsersRef = FirebaseDatabase.getInstance().getReference().child("Users");
         dbContactsRef = FirebaseDatabase.getInstance().getReference().child("Contacts");
 
+        // Checks Users DB for the currentUserId and gets their name
         dbUsersRef.child(currentUserId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -82,8 +104,13 @@ public class CheckRequests extends AppCompatActivity {
         });
     }
 
-    // goes back to fragment that calls this activity
-    // ref: https://stackoverflow.com/questions/31491093/how-to-go-back-to-previous-fragment-from-activity
+    /**
+     * This method allows the user to go back to the fragment they were on before they accessed the chat requests activity.
+     * @param item gets the home button pressed
+     * @return item selected
+     *
+     *  ref: https://stackoverflow.com/questions/31491093/how-to-go-back-to-previous-fragment-from-activity
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
@@ -93,6 +120,11 @@ public class CheckRequests extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * The onStart() method gets the friend requests saved for the current user from the Chat Requests DB.
+     * Those requests are then displayed in the activity via FirebaseRecyclerAdapter. Each item is displayed using a custom layout
+     * that displays the user who sent the request and their info.
+     */
     @Override
     protected void onStart() {
         super.onStart();
@@ -120,34 +152,34 @@ public class CheckRequests extends AppCompatActivity {
                 getTypeRef.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
                         if(dataSnapshot.exists()) {
                             String type = dataSnapshot.getValue().toString();
 
                             // if request_type has value received
                             if(type.equals("received")) {
                                 Log.d(TAG, "////////////////////////////////////////----------------------------- type = receieved");
+
                                 // take the userId who sent the request and get their profile information from the users db
                                 dbUsersRef.child(userIDs).addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
                                         // check because having an image is optional
                                         if(dataSnapshot.hasChild("image")) {
 
-                                            // user information intialised in these variables
+                                            // user image from friebase stored in variable and passed to the view via Glide
                                             final String requestSenderImage = dataSnapshot.child("image").getValue().toString();
-
-                                            // variables info passed into the viewholder fields
                                             Glide.with(requestViewHolder.profileImage.getContext().getApplicationContext())
                                                     .load(requestSenderImage)
                                                     .placeholder(R.drawable.profile_image)
                                                     .into(requestViewHolder.profileImage);
-
                                         }
 
+                                        // gets the sender's name and
+                                        // Sets the name of sender and his status as wanting to connect
                                         final String requestSenderName = dataSnapshot.child("name").getValue().toString();
                                         senderUserName = requestSenderName;
-                                      //  final String requestSenderStatus = dataSnapshot.child("status").getValue().toString();
-
                                         requestViewHolder.userName.setText(requestSenderName);
                                         requestViewHolder.userStatus.setText("Wants to connect with you.");
 
@@ -162,7 +194,6 @@ public class CheckRequests extends AppCompatActivity {
 
                                                 AlertDialog.Builder builder = new AlertDialog.Builder(CheckRequests.this);
                                                 builder.setTitle("Join Request from " + requestSenderName);
-
                                                 builder.setItems(options, new DialogInterface.OnClickListener() {
                                                     @Override
                                                     public void onClick(DialogInterface dialog, int which) {
@@ -192,7 +223,6 @@ public class CheckRequests extends AppCompatActivity {
                                                                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                                             @Override
                                                                             public void onComplete(@NonNull Task<Void> task) {
-
                                                                                 // if successful...
                                                                                 if(task.isSuccessful()) {
 
@@ -211,6 +241,8 @@ public class CheckRequests extends AppCompatActivity {
                                                                                                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                                                                                     @Override
                                                                                                                     public void onComplete(@NonNull Task<Void> task) {
+
+                                                                                                                        // Updates user if successfull
                                                                                                                         if(task.isSuccessful()) {
                                                                                                                             Toast.makeText(CheckRequests.this, "Contact Saved!", Toast.LENGTH_SHORT).show();
                                                                                                                         }
@@ -247,6 +279,8 @@ public class CheckRequests extends AppCompatActivity {
                                                                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                                                             @Override
                                                                                             public void onComplete(@NonNull Task<Void> task) {
+
+                                                                                                // lets user know contact deleted
                                                                                                 if(task.isSuccessful()) {
                                                                                                     Toast.makeText(CheckRequests.this, "Contact Deleted!", Toast.LENGTH_SHORT).show();
                                                                                                 }
@@ -256,21 +290,17 @@ public class CheckRequests extends AppCompatActivity {
                                                                             }
                                                                         }
                                                                     });
-
                                                         }
                                                     }
                                                 });
-
                                                 builder.show();
-
                                             }
                                         });
-
                                     }
 
                                     @Override
                                     public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                                        // handle canceled error here
                                     }
                                 });
                             } else {
@@ -281,7 +311,7 @@ public class CheckRequests extends AppCompatActivity {
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                        // handle canceled error here
                     }
                 });
             }
@@ -296,13 +326,15 @@ public class CheckRequests extends AppCompatActivity {
             }
         };
 
+        // updates the list and tells the adapter to listen for new entries
         requestList.setAdapter(adapter);
         adapter.startListening();
-
     }
 
 
-    // Viewholder class declares and intitialises the fields to be set bey the adapter
+    /**
+     * The RequestViewholder class declares and intitialises the fields to be set by the adapter
+     */
     public static class RequestViewHolder extends RecyclerView.ViewHolder {
 
         // fields used to initialise objects in viewHolder
@@ -319,7 +351,6 @@ public class CheckRequests extends AppCompatActivity {
             userStatus = itemView.findViewById(R.id.user_status);
             acceptBtn = itemView.findViewById(R.id.request_accept);
             cancelBtn = itemView.findViewById(R.id.request_deny);
-
         }
     }
 }

@@ -171,12 +171,11 @@ public class Roster extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                // handle canceled error here
             }
         });
 
-
-        // OnCLick opens the dialog to choose memeber
+        // OnCLick opens the dialog to choose member
         chooseMember.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -257,7 +256,7 @@ public class Roster extends Fragment {
 
                             @Override
                             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                                // handle canceled error here
                             }
                         });
                     }
@@ -266,7 +265,7 @@ public class Roster extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                // handle canceled error here
             }
         });
     }
@@ -427,6 +426,7 @@ public class Roster extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
+                // handle canceled error here
             }
         });
 
@@ -566,6 +566,7 @@ public class Roster extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
+                // handle canceled error here
             }
         });
     }
