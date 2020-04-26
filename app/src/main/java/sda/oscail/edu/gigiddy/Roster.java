@@ -50,6 +50,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.sql.Array;
+import java.sql.Time;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,39 +64,55 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Set;
+import java.util.SimpleTimeZone;
+import java.util.TimeZone;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * This Roster fragment class provides the user with a calendar view.
+ * The view is updates from the Firebase DB if dates have been set to the current user by the admin user.
+ * If Admin user is the current user they can also select members and set dates for them that appear on their calendars.
+ *
+ * @author Colin Fleck <colin.fleck@mail.dcu.ie>
+ * @version 1.0
+ * @since 24/02/2020
  */
 public class Roster extends Fragment {
 
-
+    // Array lists and adapters used to populate dialog options
     private ArrayList<String> list = new ArrayList<>();
     private ArrayList<String> idList = new ArrayList<>();
     private ArrayList<String> gigList = new ArrayList<>();
-    List<EventDay> events = new ArrayList<>();
     private ArrayAdapter<String> adapter, gigAdapter;
+
     private Button setDates, chooseMember;
     private TextView chosenMemberTextView;
     private  int indexOfChosen;
+
+    // calendar variables used to set and select dates
+    private List<EventDay> events = new ArrayList<>();
     private CalendarView calendarView;
     private List<Calendar> selectedDates = new ArrayList<>();
 
-
+    // Firebase variables declared
     private DatabaseReference contactsRef, rootRef, rosterRef, currentUserRef;
     private FirebaseAuth mAuth;
-    private String currentUID, memberChosen, memberChosenID, chosenGigAndTime;
+    private String currentUID, memberChosen, memberChosenID, chosenGigAndTime, gigName;
 
-
-
+    // empty contructor required by java
     public Roster() {
         // Required empty public constructor
     }
 
-
+    /**
+     * Creates the fragment view. This Fragment provides a calendar view where dates can be set, saved, and viewed depending on the type of user.
+     * @param inflater inflates the fragment layout
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -124,12 +141,14 @@ public class Roster extends Fragment {
         adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, list);
         gigAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, gigList);
 
+        // gets the contact info of the current user
         getContacts();
 
+        // set the events that are in the events list
         Log.d(TAG, "///////////////////////////////////----------------------events data: "+ events);
         calendarView.setEvents(events);
 
-        // checks user type for member
+        // checks user type in db for member
         currentUserRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -141,6 +160,7 @@ public class Roster extends Fragment {
                     if(dataSnapshot.getValue().toString().equals("member")) {
                         Log.d(TAG, "/////////////////////////////////------------------------- user type READ");
 
+                        // hides the admin ability to set dates foe users
                         chooseMember.setEnabled(false);
                         chooseMember.setVisibility(View.INVISIBLE);
                         setDates.setVisibility(View.INVISIBLE);
@@ -156,7 +176,7 @@ public class Roster extends Fragment {
         });
 
 
-        // select member to set dates for
+        // OnCLick opens the dialog to choose memeber
         chooseMember.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -164,7 +184,7 @@ public class Roster extends Fragment {
             }
         });
 
-        // select dates for chosen member
+        // OnClick opens dialog to select dates for chosen member
         setDates.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -174,6 +194,11 @@ public class Roster extends Fragment {
         return root;
     }
 
+    /**
+     *  onStart() method called when the fragment loads.
+     *  Calls the checkForDates() method to populate calendar with any dates saved in DB.
+     *  Calls the getContacts() to get the list of contacts user has in DB.
+     */
     @Override
     public void onStart() {
         super.onStart();
@@ -181,6 +206,10 @@ public class Roster extends Fragment {
         getContacts();
     }
 
+    /**
+     * This method checks for dates saved in the DB for the current user.
+     * If dates are saved in db then it takes those dates and sends them to the setDates() method to populate them in the calendar view.
+     */
     private void checkForDates() {
         Log.d(TAG, "////////////////////////////////////////-----------------------------------------   getDatesSaved method was reached ");
 
@@ -197,12 +226,16 @@ public class Roster extends Fragment {
 
                         // gets all dates under specific gig location
                         DatabaseReference gigRef = rosterRef.child(currentUID).child(id);
+
                         gigRef.addValueEventListener(new ValueEventListener() {
                             @RequiresApi(api = Build.VERSION_CODES.N)
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+                                // if dates exist....
                                 if(dataSnapshot.exists()) {
+
+                                    // ...then iterate over those dates
                                     Iterator itr = dataSnapshot.getChildren().iterator();
                                     Set<String> dateSet = new HashSet<>();
 
@@ -212,7 +245,7 @@ public class Roster extends Fragment {
                                         Log.d(TAG, "onDataChange: ----------------------------------------------------------" + date);
                                         dateSet.add(date);
                                     }
-
+                                    // sends the dates and the gig id to the setDates() method
                                     try {
                                         // sends sates for icons to be reflected in calendar view
                                         setDates(dateSet, id);
@@ -238,9 +271,16 @@ public class Roster extends Fragment {
         });
     }
 
-    // Receives dates retrieved from the db
-    // convertxs them to calendar format
-    // sets the dates as new events with an icon on the calendar view
+    /**
+     *  setDates() Receives dates retrieved from the db in the checkForDates() method.
+     *  Dates are then converted to calendar format and added to the events ArrayList.
+     *  The Appleando thrid Party calendar then sets the dates as new events with an icon on the calendar view.
+     *  ref: https://github.com/Applandeo/Material-Calendar-View
+     *
+     * @param dates are passed from the checkForDates() method
+     * @param id is never used, but will be for future feature where user can select date and be shown which gig and what time
+     * @throws ParseException
+     */
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void setDates(Set<String> dates, String id) throws ParseException {
 
@@ -261,8 +301,13 @@ public class Roster extends Fragment {
         Log.d(TAG, "setDates: --------------------------------------------- " + events);
     }
 
-    // Alert dialog shows list of names to set dates for, click one to choose
-    // ref: https://stackoverflow.com/questions/15762905/how-can-i-display-a-list-view-in-an-android-alert-dialog
+    /**
+     * showDialog() method shows the list contact names that the current user has saved in the  Contacts DB.
+     * Current user must be of type admin for this dialog to be shown. If so they can select which member.
+     * Once the members id is saved in the memberChosenID so the selected dates can be saved to that ID in the Roster DB.
+     *
+     * ref: https://developer.android.com/guide/topics/ui/dialogs
+     */
     private void showDialog() {
 
         // builds alert dialog
@@ -296,10 +341,12 @@ public class Roster extends Fragment {
 
                         Log.d(TAG, "//////////////////////////////--------------------------- list sequence: " + list);
                         Log.d(TAG, "//////////////////////////////--------------------------- list sequence: " + idList);
+
                         // chosen id saved to update db with dates
                         memberChosenID = idList.get(indexOfChosen);
                         Log.d(TAG, "/////////////////////////////////////----------------------------------- memberCHosenID: " + memberChosenID);
 
+                        // makes the set dates button enabled and visible once someone has been chosen to select dates for
                         if(!memberChosenID.isEmpty()) {
                             setDates.setVisibility(View.VISIBLE);
                             setDates.setEnabled(true);
@@ -313,11 +360,16 @@ public class Roster extends Fragment {
         builder.show();
     }
 
-    // ref: https://github.com/Applandeo/Material-Calendar-View
-    // shows picker to select dates for specific member
-    // Dates saved when saveDates() method invoked
+    /**
+     * shawDatePickerDialog() method opens up the calendar date picker dialog.
+     * Admin User can then select as many dates as they want.
+     * Dates saved to Roster DB when admin user clicks 'ok' --> saveDates() method invoked
+     *
+     * ref: https://github.com/Applandeo/Material-Calendar-View
+     */
     private void showDatePickerDialog() {
 
+        // Save Dates invoked on the selected dates
         OnSelectDateListener listener = new OnSelectDateListener() {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
@@ -327,6 +379,7 @@ public class Roster extends Fragment {
             }
         };
 
+        // builds the custom dialog view
         DatePickerBuilder builder = new DatePickerBuilder(getContext(), listener)
                 .pickerType(CalendarView.MANY_DAYS_PICKER)
                 .selectionColor(R.color.colorPrimary)
@@ -337,8 +390,11 @@ public class Roster extends Fragment {
         datePicker.show();
     }
 
-    // gets gig location and time data from db
-    // puts the data into alert dialog to be selected by user
+    /**
+     * selectGigAndTime() method grabs the list of Gigs saved in the DB.
+     * This data then populates the gigList ArrayList used in the
+     *     puts the data into alert dialog to be selected by user
+     */
     private void selectGigAndTime() {
 
         // grabs the gig locations and time from db
@@ -355,7 +411,7 @@ public class Roster extends Fragment {
                     // iterates over gigs in list and adds them to set
                     while (iterator.hasNext()) {
                         String id = ((DataSnapshot)iterator.next()).getKey();
-                        String gigName = dataSnapshot.child(id).getValue().toString();
+                        gigName = dataSnapshot.child(id).getValue().toString();
                         Log.d(TAG, "/////////////////////////////---------------------- gigName: " + gigName);
                         gigNameSet.add(gigName);
                     }
@@ -374,7 +430,7 @@ public class Roster extends Fragment {
             }
         });
 
-        // builds alert dialog
+        // builds alert dialog for selecting the gig and time
         // ref: https://stackoverflow.com/questions/15762905/how-can-i-display-a-list-view-in-an-android-alert-dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Choose Gig & Time");
@@ -407,14 +463,20 @@ public class Roster extends Fragment {
         builder.show();
     }
 
-    // method saves dates selected in datepicker
-    // ref: https://github.com/Applandeo/Material-Calendar-View
+    /**
+     * saveDates() method saves the dates selected in the appleando calendar date picker to the
+     * selected member in the Roster DB.
+     *
+     *     ref: https://github.com/Applandeo/Material-Calendar-View
+     */
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void saveDates() {
 
         // hashmap to hold the key and date value
         HashMap<String, Object> rosterMap = new HashMap<>();
         Calendar cal;
+
+        // loops through the selcted dates and formats accordingly
         for(int i = 0; i < selectedDates.size(); i++) {
 
             // gets firebase unique key for each date saved
@@ -423,7 +485,14 @@ public class Roster extends Fragment {
             //converts calendar dates selected to dd-mm-yyyy format
             cal = selectedDates.get(i);
             Date date = cal.getTime();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+            Log.d(TAG, "/////////////////////------------------- date selected: " + date);
+
+            // sets format for date to be saved and also corrects for Irish timezone
+            // ref: https://stackoverflow.com/questions/28857099/java-simpledateformat-decrementing-date-by-one-day
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+            dateFormat.setTimeZone(android.icu.util.TimeZone.getTimeZone("GMT+1"));
+
+            // gets date in string format
             String dateToSave = dateFormat.format(date);
             Log.d(TAG, "/////////////////////////////////-------------------------- date saved: " + dateToSave);
 
@@ -446,8 +515,10 @@ public class Roster extends Fragment {
                 });
     }
 
-    // get the list of contacts user has
-    // grabs their name to be used in list to be selected in alert dialog above
+    /**
+     * The getContacts() method gets the list of contacts the current user has saved in the contacts DB.
+     * Their names and user IDs are grabbed from the DB to be used in list which allows the admin user to set dates for them.
+     */
     private void getContacts() {
 
         // get contacts ref of current user
@@ -484,7 +555,7 @@ public class Roster extends Fragment {
                     list.clear();
                     idList.clear();
 
-                    // Array Lists created for alertdialog and chosenID
+                    // Name and user id add to the Array Lists created for alertdialog and chosenID
                     idList.addAll(setIDList);
                     list.addAll(setNameList);
 
