@@ -69,7 +69,6 @@ import java.util.TimeZone;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
-
 /**
  * This Roster fragment class provides the user with a calendar view.
  * The view is updates from the Firebase DB if dates have been set to the current user by the admin user.
@@ -101,13 +100,15 @@ public class Roster extends Fragment {
     private FirebaseAuth mAuth;
     private String currentUID, memberChosen, memberChosenID, chosenGigAndTime, gigName;
 
-    // empty contructor required by java
+    // empty constructor required by java
     public Roster() {
         // Required empty public constructor
     }
 
     /**
-     * Creates the fragment view. This Fragment provides a calendar view where dates can be set, saved, and viewed depending on the type of user.
+     * The onCreateView() method creates the fragment view. This Fragment provides a calendar view
+     * where dates can be set, saved, and viewed depending on the type of user.
+     *
      * @param inflater inflates the fragment layout
      * @param container
      * @param savedInstanceState
@@ -152,9 +153,8 @@ public class Roster extends Fragment {
         currentUserRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                // if db value exists...
                 if(dataSnapshot.exists()) {
+
                     // ...and if the type = member then they cant set dates for other user
                     // hides the set dates functionality
                     if(dataSnapshot.getValue().toString().equals("member")) {
@@ -194,7 +194,7 @@ public class Roster extends Fragment {
     }
 
     /**
-     *  onStart() method called when the fragment loads.
+     *  The onStart() method is called each time fragment loads.
      *  Calls the checkForDates() method to populate calendar with any dates saved in DB.
      *  Calls the getContacts() to get the list of contacts user has in DB.
      */
@@ -206,7 +206,7 @@ public class Roster extends Fragment {
     }
 
     /**
-     * This method checks for dates saved in the DB for the current user.
+     * The checkForDates() method checks for dates saved in the DB for the current user.
      * If dates are saved in db then it takes those dates and sends them to the setDates() method to populate them in the calendar view.
      */
     private void checkForDates() {
@@ -230,11 +230,9 @@ public class Roster extends Fragment {
                             @RequiresApi(api = Build.VERSION_CODES.N)
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                                // if dates exist....
                                 if(dataSnapshot.exists()) {
 
-                                    // ...then iterate over those dates
+                                    // iterate over the snapshot children
                                     Iterator itr = dataSnapshot.getChildren().iterator();
                                     Set<String> dateSet = new HashSet<>();
 
@@ -244,6 +242,7 @@ public class Roster extends Fragment {
                                         Log.d(TAG, "onDataChange: ----------------------------------------------------------" + date);
                                         dateSet.add(date);
                                     }
+
                                     // sends the dates and the gig id to the setDates() method
                                     try {
                                         // sends sates for icons to be reflected in calendar view
@@ -256,7 +255,7 @@ public class Roster extends Fragment {
 
                             @Override
                             public void onCancelled(@NonNull DatabaseError databaseError) {
-                                // handle canceled error here
+                                // handle db error here
                             }
                         });
                     }
@@ -265,16 +264,16 @@ public class Roster extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                // handle canceled error here
+                // handle db error here
             }
         });
     }
 
     /**
-     *  setDates() Receives dates retrieved from the db in the checkForDates() method.
+     *  The setDates() method receives dates retrieved from the db in the checkForDates() method.
      *  Dates are then converted to calendar format and added to the events ArrayList.
-     *  The Appleando thrid Party calendar then sets the dates as new events with an icon on the calendar view.
-     *  ref: https://github.com/Applandeo/Material-Calendar-View
+     *  The Appleando thied Party calendar then sets the dates as new events with an icon on the calendar view.
+     *    - Adapted from: https://github.com/Applandeo/Material-Calendar-View
      *
      * @param dates are passed from the checkForDates() method
      * @param id is never used, but will be for future feature where user can select date and be shown which gig and what time
@@ -301,7 +300,7 @@ public class Roster extends Fragment {
     }
 
     /**
-     * showDialog() method shows the list contact names that the current user has saved in the  Contacts DB.
+     * The showDialog() method shows the list contact names that the current user has saved in the  Contacts DB.
      * Current user must be of type admin for this dialog to be shown. If so they can select which member.
      * Once the members id is saved in the memberChosenID so the selected dates can be saved to that ID in the Roster DB.
      *
@@ -360,7 +359,7 @@ public class Roster extends Fragment {
     }
 
     /**
-     * shawDatePickerDialog() method opens up the calendar date picker dialog.
+     * The shawDatePickerDialog() method opens up the calendar date picker dialog.
      * Admin User can then select as many dates as they want.
      * Dates saved to Roster DB when admin user clicks 'ok' --> saveDates() method invoked
      *
@@ -390,7 +389,7 @@ public class Roster extends Fragment {
     }
 
     /**
-     * selectGigAndTime() method grabs the list of Gigs saved in the DB.
+     * The selectGigAndTime() method grabs the list of Gigs saved in the DB.
      * This data then populates the gigList ArrayList used in the
      *     puts the data into alert dialog to be selected by user
      */
@@ -402,12 +401,13 @@ public class Roster extends Fragment {
         gigRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
                 if(dataSnapshot.exists()) {
+
+                    // iterate over the snapshot children
                     Iterator iterator = dataSnapshot.getChildren().iterator();
                     final Set<String> gigNameSet = new HashSet<>();
 
-                    // iterates over gigs in list and adds them to set
+                    // iterates over gigs in db and adds them to set
                     while (iterator.hasNext()) {
                         String id = ((DataSnapshot)iterator.next()).getKey();
                         gigName = dataSnapshot.child(id).getValue().toString();
@@ -426,7 +426,7 @@ public class Roster extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                // handle canceled error here
+                // handle db error here
             }
         });
 
@@ -464,10 +464,9 @@ public class Roster extends Fragment {
     }
 
     /**
-     * saveDates() method saves the dates selected in the appleando calendar date picker to the
+     * The saveDates() method saves the dates selected in the appleando calendar date picker to the
      * selected member in the Roster DB.
-     *
-     *     ref: https://github.com/Applandeo/Material-Calendar-View
+     *    - Adapted from: https://github.com/Applandeo/Material-Calendar-View
      */
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void saveDates() {
@@ -525,7 +524,6 @@ public class Roster extends Fragment {
         contactsRef.child(currentUID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
                 if(dataSnapshot.exists()) {
 
                     // Sets are populated with db data: names and corresponding ids of the contacts to the currentUID

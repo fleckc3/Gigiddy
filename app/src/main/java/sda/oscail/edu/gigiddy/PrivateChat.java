@@ -42,16 +42,28 @@ import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+/**
+ * The PrivateChat activity creates the 1:1 chat activity for users who are friends with each other.
+ * This activity receives the information on the user from the member fragment. This user info is
+ * used to show their name and profile image
+ *    - Adapted from: https://www.youtube.com/watch?v=9siwOvkQb5c&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=47
+ *
+ * @author Colin Fleck <colin.fleck@mail.dcu.ie>
+ * @version 1.0
+ * @since 10/03/2020
+ */
 public class PrivateChat extends AppCompatActivity {
-
     private static final String TAG = "PrivateChat";
+
+    // private chat variables declared
     private String messageReceiverId, messageReceiverName, otherUserProfileImage, senderUserId;
-    private TextView userName, userLastSeen;
+    private TextView userName;
     private CircleImageView userImage;
     private ImageButton sendMessageBtn;
     private EditText messageToUserInput;
     private Toolbar privateChatToolbar;
 
+    // Firebase auth and db references
     private FirebaseAuth mAuth;
     private DatabaseReference dbRootRef;
 
@@ -61,9 +73,12 @@ public class PrivateChat extends AppCompatActivity {
     private MessageAdapter messageAdapter;
     private RecyclerView userMessagesList;
 
-
-
-    // ref: https://www.youtube.com/watch?v=9siwOvkQb5c&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=47
+    /**
+     * The onCreate() method creates the activity view and initialises the view objects. It also coordinates
+     * with the MessageAdapter to get the messages sent and recieved from the users and displays them
+     * appropriately.
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,6 +90,7 @@ public class PrivateChat extends AppCompatActivity {
         sendMessageBtn = findViewById(R.id.send_message_btn);
         messageToUserInput = findViewById(R.id.input_message);
 
+        // Sets the message adapter on the message list with linear layout manager
         messageAdapter = new MessageAdapter(messagesList);
         userMessagesList = findViewById(R.id.private_messages_list);
         linearLayoutManager = new LinearLayoutManager(this);
@@ -108,19 +124,19 @@ public class PrivateChat extends AppCompatActivity {
         actionBar.setDisplayShowCustomEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        // sets the custom bar layout with name and username
+        // sets the custom bar layout with name and userprofile image
         LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View actionBarView = layoutInflater.inflate(R.layout.private_chat_bar, null);
         actionBar.setCustomView(actionBarView);
 
-        Log.d(TAG, " PRIVATE CHAT /////////////////////////////////// ------------------------------------------ " +otherUserProfileImage);
+        Log.d(TAG, " PRIVATE CHAT /////////////////////////////////// ------------------------------------------ " + otherUserProfileImage);
 
-        // sets the profile image of user
+        // Sets the profile image and user name in the chat bar with information passed from the
+        // member fragment
         Glide.with(this)
                 .load(otherUserProfileImage)
                 .placeholder(R.drawable.profile_image)
                 .into(userImage);
-        // set user data in custom toolbar fields
         userName.setText(messageReceiverName);
 
         // send message logic called
@@ -132,8 +148,12 @@ public class PrivateChat extends AppCompatActivity {
         });
     }
 
-    // goes back to fragment that calls this activity
-    // ref: https://stackoverflow.com/questions/31491093/how-to-go-back-to-previous-fragment-from-activity
+    /**
+     *  The onOptionsItemSelected() method allows user to go back to fragment that started this activity
+     *    - Adapted from: https://stackoverflow.com/questions/31491093/how-to-go-back-to-previous-fragment-from-activity
+     * @param item is the back button
+     * @return menu item selected
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
@@ -143,6 +163,10 @@ public class PrivateChat extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * The onsTart() method here serves to grab the messages currently in the DB and add them to
+     * the messagesList so they can be appropriately formatted in the chat recyclerView.
+     */
     @Override
     protected void onStart() {
         super.onStart();
@@ -150,13 +174,15 @@ public class PrivateChat extends AppCompatActivity {
         // ref: https://stackoverflow.com/questions/26580723/how-to-scroll-to-the-bottom-of-a-recyclerview-scrolltoposition-doesnt-work
         userMessagesList.scrollToPosition(messagesList.size() - 1);
 
+        // Gets the messages saved between current user and their friend they clicked on in member fragment
         dbRootRef.child("Messages").child(senderUserId).child(messageReceiverId)
                 .addChildEventListener(new ChildEventListener() {
                     @Override
                     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                        // uses the Messages model class to get the message information and pass it to the messageList
+                        // the adpater is then notified to update with the information
                         Messages messages = dataSnapshot.getValue(Messages.class);
-
-
                         messagesList.add(messages);
                         Log.d(TAG, "//////////////////////////------------------- message list: " + messagesList);
                         messageAdapter.notifyDataSetChanged();
@@ -184,31 +210,21 @@ public class PrivateChat extends AppCompatActivity {
                 });
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        Log.d(TAG, "/////////////////////// --------------------- IM ON PAAAAAAUUUUSSSSEEEE");
-        finish();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.d(TAG, "/////////////////////// --------------------- IM REEEEEESUUUUUMMMMIIINNNGGG");
-
-    }
-
-    // ref: https://www.youtube.com/watch?v=pI9g8zUEqKI&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=48
+    /**
+     * The sendMessage() method saves the message in the DB twice. Once for the current user with a
+     * reference on who they sent the message to. And a second time for the receiving user with a reference
+     * to the current user AKA the sender.
+     */
     private void sendMessage() {
-
-
+        // gets the messaeg input from user
         String messageText = messageToUserInput.getText().toString();
 
+        // alerts user if the input is empty
         if(messageText.isEmpty()) {
             Toast.makeText(this, "Please write something...", Toast.LENGTH_SHORT).show();
         } else {
 
-            // string db refs to sender and reciever for messages
+            // These two strings create the message references in the Messages DB for each user
             String messageSenderRef = "Messages/" + senderUserId + "/" + messageReceiverId;
             String messageReceiverRef = "Messages/" + messageReceiverId + "/" + senderUserId;
 
@@ -219,15 +235,19 @@ public class PrivateChat extends AppCompatActivity {
             // grabs key created above
             String messagePushID = userMessageKeyRef.getKey();
 
+            // creates the message information stored for each message entry
+            // under the String references set above.
             Map messageTextBody = new HashMap();
             messageTextBody.put("message", messageText);
             messageTextBody.put("type", "text");
             messageTextBody.put("from", senderUserId);
 
+            // message body text is added with the strign reference and id to the messageBodyDetails map
             Map messageBodyDetails = new HashMap();
             messageBodyDetails.put(messageSenderRef + "/" + messagePushID, messageTextBody);
             messageBodyDetails.put(messageReceiverRef + "/" + messagePushID, messageTextBody);
 
+            // updates the Messaged DB with messages sent between users
             dbRootRef.updateChildren(messageBodyDetails).addOnCompleteListener(new OnCompleteListener() {
                 @Override
                 public void onComplete(@NonNull Task task) {
@@ -236,14 +256,12 @@ public class PrivateChat extends AppCompatActivity {
                     } else {
                         Toast.makeText(PrivateChat.this, "Error", Toast.LENGTH_SHORT).show();
                     }
-
                     messageToUserInput.setText("");
                 }
             });
 
             // ref: https://stackoverflow.com/questions/26580723/how-to-scroll-to-the-bottom-of-a-recyclerview-scrolltoposition-doesnt-work
             userMessagesList.scrollToPosition(messagesList.size() - 1);
-
         }
     }
 }
