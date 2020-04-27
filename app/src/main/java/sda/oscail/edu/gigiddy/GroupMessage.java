@@ -3,12 +3,13 @@ package sda.oscail.edu.gigiddy;
 /**
  * The GroupMessage model class is used by the group message activity and the GroupMessageAdapter.class to
  * get the group message data and displaye it properly in the group message activity
+ *   - Adapted from: https://www.youtube.com/playlist?list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj
  *
  * @author Colin Fleck <colin.fleck@mail.dcu.ie>
  * @version 1.0
  * @since 07/04/2020
  *
- *   - ref: https://www.youtube.com/playlist?list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj
+
  */
 public class GroupMessage {
 

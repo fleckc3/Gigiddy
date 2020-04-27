@@ -1,45 +1,45 @@
 package sda.oscail.edu.gigiddy;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.FragmentManager;
 import androidx.viewpager.widget.ViewPager;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.Objects;
-
+/**
+ * The MainActivity class contains the bulk of the app. Here the 4 fragments are adapted in
+ * the view with tabs.
+ *
+ * @author Colin Fleck <colin.fleck@mail.dcu.ie>
+ * @version 1.0
+ * @since 10/03/2020
+ */
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
     public static final int BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT = 1;
-    // View name of the header title. Used for activity scene transitions
-    public static final String VIEW_NAME_HEADER_TITLE = "detail:header:title";
-    ViewPager viewPager;
-    private String fromLogin;
-
+    private ViewPager viewPager;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseUser mUser;
     private DatabaseReference dbRef;
 
+    /**
+     * The onCreate() method initilaises the main activity view which contains
+     * four tabbed fragments and a toolbar. This activity also check the authenticated status of the user.
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
         // Firebase auth and db references
         mAuth = FirebaseAuth.getInstance();
         dbRef = FirebaseDatabase.getInstance().getReference();
-
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -62,8 +61,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
-
-
 
         //set the toolbar we have overridden
         Toolbar toolbar = findViewById(R.id.main_toolbar);
@@ -89,46 +86,41 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    // reference https://www.youtube.com/watch?v=E-Ri7tK0E5I&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=11
+    /**
+     * The onOptionsItemSelected() method is called when the user clicks on the three dot button in the toolbar.
+     * Depending on the user's selection it will start an activity related to the selection.
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         super.onOptionsItemSelected(item);
 
-        // If logout pressed...
+        // If logout pressed then sign user out and send to Login activity
         if(item.getItemId() == R.id.logout_option) {
-
-            //....then sign user out and send to main
-            // at main check for signed in will fail which will send to login activity
             FirebaseAuth.getInstance().signOut();
             Intent toMain = new Intent(this, Login.class);
             startActivity(toMain);
         }
 
-        // if settings option pressed...
+        // if settings option pressed then send user to settings activity
         if(item.getItemId() == R.id.settings_option) {
-
-            // ....Settings activity opened
             Intent toSettingsActivity = new Intent(this, Settings.class);
             toSettingsActivity.putExtra("from_activity", "main");
             startActivity(toSettingsActivity);
         }
 
-        // if find friends option selected...
+        // if find friends option selected send user to find friends activity
         if(item.getItemId() == R.id.find_friends_option) {
-
-            //...then dins friends activity opened
             Intent findMemberActivity = new Intent(MainActivity.this, FindMembers.class);
             startActivity(findMemberActivity);
         }
 
-        // if check requests option selected....
+        // if check requests option selected send user to check requests activity
         if(item.getItemId() == R.id.requests_option) {
-
-            // .....then check request activity opened
             Intent checkRequestsIntent = new Intent(MainActivity.this, CheckRequests.class);
             startActivity(checkRequestsIntent);
         }
-
         return true;
     }
 }

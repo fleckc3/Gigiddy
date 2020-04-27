@@ -23,13 +23,12 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * The FindMembers activity implements a FirebaseRecyclerViewAdapter to get and display all the users who have created accounts with the app.
- * Their User information are then diplayed using a custom layout. Clicking on an item will start that users Profile activity.
+ * Their User information are then displayed using a custom layout. Clicking on an item will start that users Profile activity.
+ *    - Adapted from: https://www.youtube.com/watch?v=UTTqzqX9oXQ&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=28
  *
  * @author Colin Fleck <colin.fleck@mail.dcu.ie>
  * @version 1.0
  * @since 07/04/2020
- *
- * ref: https://www.youtube.com/watch?v=UTTqzqX9oXQ&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=28
  */
 public class FindMembers extends AppCompatActivity {
 

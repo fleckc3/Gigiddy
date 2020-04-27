@@ -40,14 +40,11 @@ import de.hdodenhof.circleimageview.CircleImageView;
  * friend requests saved in the Chat Request DB and show them in the activity using a custom layout.
  * Each item portrays the user who sent the request with their name, picture, and status along with an accept and cancel button.
  * The current user can then accept or cancel the friend request.
- *
+ *   - Adapted from: https://www.youtube.com/watch?v=WGOY7Lsac1U&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=41
  *
  * @author Colin Fleck <colin.fleck@mail.dcu.ie>
  * @version 1.0
  * @since 09/04/2020
- *
- *
- * ref: https://www.youtube.com/watch?v=WGOY7Lsac1U&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=41
  */
 public class CheckRequests extends AppCompatActivity {
     private static final String TAG = "CheckRequests";

@@ -36,17 +36,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-
 /**
  * The Chat fragment view houses a button at the top that is used to create new group chats.
  * Group chats are saved in the Groups DB. This fragment consists of a recyclerVIew that uses the GroupMessageAdapter
  * to display the different group chats saved in the DB. Clicking on the individual group chat name starts the GroupChat activity for that chat.
+ *   - Adapted from: https://www.youtube.com/watch?v=h1XoOj6-mmk&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=17
  *
  * @author Colin Fleck <colin.fleck@mail.dcu.ie>
  * @version 1.0
  * @since 01/04/2020
- *
- *  ref: https://www.youtube.com/watch?v=h1XoOj6-mmk&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=17
  */
 public class Chat extends Fragment {
     private static final String TAG = "Chat";

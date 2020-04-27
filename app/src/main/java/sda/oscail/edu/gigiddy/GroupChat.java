@@ -32,11 +32,12 @@ import java.util.List;
 
 /**
  * The GroupChat Activity creates a custom chat where multiple users can send and receive chat messages.
+ *   - Adapted from: https://www.youtube.com/watch?v=4RL85tdhCEU&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=18
  *
  * @author Colin Fleck <colin.fleck@mail.dcu.ie>
  * @version 1.0
  * @since 21/04/2020
- *  - ref: https://www.youtube.com/watch?v=4RL85tdhCEU&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=18
+ *
  */
 public class GroupChat extends AppCompatActivity {
     private static final String TAG = "GroupChat";

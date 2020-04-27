@@ -2,12 +2,11 @@ package sda.oscail.edu.gigiddy;
 
 /**
  * Contacts Model class helps the firebase adapters and other recycler views with access data models from the DB.
+ *   - Adapted from: https://www.youtube.com/playlist?list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj
  *
  * @author Colin Fleck <colin.fleck@mail.dcu.ie>
  * @version 1.0
  * @since 07/04/2020
- *
- *   - ref: https://www.youtube.com/playlist?list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj
  */
 public class Contacts {
 

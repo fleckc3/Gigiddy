@@ -31,8 +31,16 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 
 /**
- * A simple {@link Fragment} subclass.
- * ref: https://www.youtube.com/watch?v=FFHuYcB3YnU&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=39
+ * The Members fragment contains all the contacts a user has saved in the contacts DB.
+ * Those 'friends' then are retrieved using a FirebaseRecyclerAdapter and the Contacts Model class.
+ * Each contact is then displayed in a custom layout showing their name, status, and profile image.
+ * A chat button is also present in each users layout. If the user clicks anywhere on a users layout
+ * it will open up a 1:1 chat with that friend.
+ *   - Adapted from: https://www.youtube.com/watch?v=FFHuYcB3YnU&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=39
+ *
+ * @author Colin Fleck <colin.fleck@mail.dcu.ie>
+ * @version 1.0
+ * @since 05/04/2020
  */
 public class Members extends Fragment {
 
@@ -48,7 +56,16 @@ public class Members extends Fragment {
         // Required empty public constructor
     }
 
-
+    /**
+     * The onCreateView() method inflates the fragment view. Fields are then initialised which are used
+     * in the FirebaseRecyclerAdapter.
+     *     - Adapted from: https://www.youtube.com/playlist?list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj
+     *
+     * @param inflater inflates the fragment layout
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -68,58 +85,68 @@ public class Members extends Fragment {
         return root;
     }
 
-
+    /**
+     * The onStart() method implements the FirebaseRecyclerAdapter whenever the fragment is started.
+     * Which makes sure the fragment is up to date with the most current information every time it
+     * is accessed.
+     */
     @Override
     public void onStart() {
         super.onStart();
 
-        // queries the db for contacts associated with current auth user
+        // queries the db for contacts associated with current auth user using the contacts model class
         FirebaseRecyclerOptions options = new FirebaseRecyclerOptions.Builder<Contacts>()
                 .setQuery(dbContactsRef, Contacts.class)
                 .build();
 
+        // Takes each option and formulates them into the custom RecyclerAdapter view
         FirebaseRecyclerAdapter<Contacts, MembersViewHolder> adapter = new FirebaseRecyclerAdapter<Contacts, MembersViewHolder>(options) {
 
             // retrieves the user info and binds them to the fields in each view in recycler view
             @Override
             protected void onBindViewHolder(@NonNull final MembersViewHolder membersViewHolder, int i, @NonNull Contacts contacts) {
-
+                // chat btn visible
                 membersViewHolder.itemView.findViewById(R.id.chat_btn).setVisibility(View.VISIBLE);
 
                 // gets the string ref of the user ID at each position 'i' in the list
+                // then references that ID in the Users DB to get the users information
                 final String usersIDs = getRef(i).getKey();
-
                 dbUsersRef.child(usersIDs).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         String userProfileImage = "";
+
+                            // check user has image in DB, then gets the rest of the users information
                             if(dataSnapshot.hasChild("image")) {
                                 userProfileImage = dataSnapshot.child("image").getValue().toString();
                                 final String userProfileName = dataSnapshot.child("name").getValue().toString();
                                 String userProfileStatus = dataSnapshot.child("status").getValue().toString();
 
+                                // user information is now set in the correct views
                                 membersViewHolder.userName.setText(userProfileName);
                                 membersViewHolder.userStatus.setText(userProfileStatus);
-
                                 Glide.with(membersViewHolder.profileImage.getContext())
                                         .load(userProfileImage)
                                         .placeholder(R.drawable.profile_image)
                                         .into(membersViewHolder.profileImage);
 
+                                // User profile image copied over to this variable so that it can be passed to the private chat intent
                                 final String finalUserProfileImage1 = userProfileImage;
                                 membersViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
                                         Log.d(TAG, "MEMBERS ////////////////////////////// ----------------------------------------- " + finalUserProfileImage1);
+
+                                        // Private chat intent is passed the users information to be used in that chat
                                         Intent goToChatIntent = new Intent(getContext(), PrivateChat.class);
                                         goToChatIntent.putExtra("user_id", usersIDs);
                                         goToChatIntent.putExtra("user_name", userProfileName);
                                         goToChatIntent.putExtra("user_image", finalUserProfileImage1);
                                         startActivity(goToChatIntent);
-
                                     }
                                 });
 
+                            // if no user image, get rest of the users info and set in the view layout
                             } else {
 
                                 String userProfileStatus = dataSnapshot.child("status").getValue().toString();
@@ -139,37 +166,32 @@ public class Members extends Fragment {
                                         startActivity(goToChatIntent);
                                     }
                                 });
-
-
                             }
-
                         }
-
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                        // handle db error here
                     }
                 });
             }
 
-            // creates the container for each item in the recyclerview
+            // creates the container for each item in the recyclerview using the custom layout
             @NonNull
             @Override
             public MembersViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
                 View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.display_user_layout, parent, false);
                 MembersViewHolder viewHolder = new MembersViewHolder(view);
                 return viewHolder;
-
             }
         };
-
         memberList.setAdapter(adapter);
         adapter.startListening();
     }
 
-    // intialises the views inside the viewholder
+    /**
+     * The MembersViewHolder class initialises the view objects inside the viewholder
+     */
     public static class MembersViewHolder extends RecyclerView.ViewHolder {
 
         TextView userName, userStatus;
@@ -183,15 +205,12 @@ public class Members extends Fragment {
             userStatus = itemView.findViewById(R.id.user_status);
             profileImage = itemView.findViewById(R.id.user_profile_image);
             chatBtn = itemView.findViewById(R.id.chat_btn);
-
         }
     }
-
 
     @Override
     public void onPause() {
         super.onPause();
-
     }
 }
 

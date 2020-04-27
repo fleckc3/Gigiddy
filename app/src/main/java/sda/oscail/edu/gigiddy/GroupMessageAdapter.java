@@ -26,12 +26,11 @@ import static androidx.constraintlayout.widget.Constraints.TAG;
 /**
  * The GroupMessageAdapter gets the messages for each group chat and displays them via custom layouts depending
  * on who the sender and receiver are.
+ *   - ref: https://www.youtube.com/playlist?list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj
  *
  * @author Colin Fleck <colin.fleck@mail.dcu.ie>
  * @version 1.0
  * @since 21/04/2020
- *
- *   - ref: https://www.youtube.com/playlist?list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj
  */
 public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapter.MessageViewHolder> {
 
@@ -127,7 +126,7 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapte
             holder.senderMessageText.setText(messages.getMessage());
             holder.senderMessageText.setVisibility(View.VISIBLE);
 
-        // If not then messages set in the reciever fields
+        // If not then messages set in the receiver fields
         } else {
             holder.senderMessageText.setVisibility(View.INVISIBLE);
             holder.receiverProfileImage.setVisibility(View.VISIBLE);

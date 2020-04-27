@@ -1,6 +1,13 @@
 package sda.oscail.edu.gigiddy;
 
-// ref: https://www.youtube.com/watch?v=n8QWeqeUeA0&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=50
+/**
+ * This message model class is used in conjunction with the message adapter to get the
+ * messages saved in the Firebase messages DB.
+ *
+ * @author Colin Fleck <colin.fleck@mail.dcu.ie>
+ * @version 1.0
+ * @since 14/04/2020
+ */
 public class Messages {
 
     private String from, message, type;

@@ -30,6 +30,17 @@ import com.google.firebase.auth.FirebaseUser;
 
 import static androidx.annotation.InspectableProperty.ValueType.COLOR;
 
+/**
+ * The Login class serves as the gateway into Gigiddy. It also is the welcome screen.
+ * Here the user can log back in. If they are anew user and try to login they will get an error toast message.
+ * A link at the bottom lets the user know uf they are new to 'click here' to sign up. This takes them to the
+ * Register activity.
+ *    - Adapted from: https://www.youtube.com/playlist?list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj
+ *
+ * @author Colin Fleck <colin.fleck@mail.dcu.ie>
+ * @version 1.0
+ * @since 12/03/2020
+ */
 public class Login extends AppCompatActivity {
     private static final String TAG = "Login";
 

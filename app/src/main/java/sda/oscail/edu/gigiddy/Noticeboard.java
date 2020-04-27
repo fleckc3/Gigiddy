@@ -28,11 +28,16 @@ import static androidx.constraintlayout.widget.Constraints.TAG;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * The Noticeboard fragment is the welcome screen for the Gigiddy app. Here the user is greeted with
+ * their name and profile image along with a quick introduction on how to use the app.
+ *
+ * @author Colin Fleck <colin.fleck@mail.dcu.ie>
+ * @version 1.0
+ * @since 10/03/2020
  */
 public class Noticeboard extends Fragment {
 
-
+    // View and firebase variables declared
     private FirebaseAuth mAuth;
     private DatabaseReference userRef;
     private FirebaseUser mUser;
@@ -40,12 +45,17 @@ public class Noticeboard extends Fragment {
     private CircleImageView userProfileImage;
     private TextView currentUserNameField, bodyText;
 
-
-
     public Noticeboard() {
         // Required empty public constructor
     }
 
+    /**
+     * The onCreateView() method inflates the fragment view.
+     * @param inflater inflates the fragment layout
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -58,8 +68,6 @@ public class Noticeboard extends Fragment {
 
         // Initialise firebase auth and db references
         mAuth = FirebaseAuth.getInstance();
-
-
         currentUID = mAuth.getUid().toString();
         userRef = FirebaseDatabase.getInstance().getReference().child("Users");
 
@@ -68,24 +76,24 @@ public class Noticeboard extends Fragment {
         return root;
     }
 
-    // gets user profile info from db
+    /**
+     * The getUserInfo() method gets the current user information fromm the Users DB
+     */
     private void getUserInfo() {
 
-        // checks db at the current user reference
+        // checks db at the current user ID reference
         userRef.child(currentUID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 // ref: https://stackoverflow.com/questions/53693696/you-cannot-start-a-load-on-a-not-yet-attached-view-or-a-fragment-where-getactivi/53693826
                 if(isAdded()) {
-                    // if the current user is in db
+                    // if the current user is in db and has a name and image then grabs those values
                     if(dataSnapshot.exists() && dataSnapshot.hasChild("name") && dataSnapshot.hasChild("image")) {
-
-                        // ...then grab name and profile image
                         String name = dataSnapshot.child("name").getValue().toString();
                         String profileImage = dataSnapshot.child("image").getValue().toString();
 
-                        // set those variables in their views
+                        // set the users name and image in their views
                         currentUserNameField.setText(name);
                         Glide.with(getActivity())
                                 .load(profileImage)
@@ -97,7 +105,7 @@ public class Noticeboard extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                // handle db error here
             }
         });
     }
