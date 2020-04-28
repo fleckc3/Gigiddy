@@ -63,7 +63,7 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@+id/current_user_name"
             app:layout_constraintBottom_toBottomOf="parent"
             android:background="@drawable/rectangle"
@@ -100,6 +100,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginTop="20dp"
+                android:layout_marginBottom="30dp"
                 android:text=" - Click three dots in right hand corner to Logout, Find Friends, check Friend Requests, and change Profile info"
                 android:textSize="20sp"/>
 

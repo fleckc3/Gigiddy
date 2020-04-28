@@ -16,37 +16,59 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:label">
+
         <activity
             android:name=".PrivateChat"
+            android:screenOrientation="portrait"
             android:parentActivityName=".MainActivity" />
+
         <activity
             android:name=".CheckRequests"
+            android:screenOrientation="portrait"
             android:parentActivityName=".MainActivity" />
+
         <activity
             android:name=".Profile"
+            android:screenOrientation="portrait"
             android:parentActivityName=".FindMembers" />
+
         <activity
             android:name=".FindMembers"
+            android:screenOrientation="portrait"
             android:parentActivityName=".MainActivity" />
-        <activity android:name=".SetProfileImage" />
+
+        <activity android:name=".SetProfileImage"
+            android:screenOrientation="portrait"/>
+
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/Base.Theme.AppCompat" />
+
         <activity
             android:name=".GroupChat"
+            android:screenOrientation="portrait"
             android:parentActivityName=".MainActivity" />
+
         <activity
             android:name=".Settings"
+            android:screenOrientation="portrait"
             android:parentActivityName=".MainActivity" />
-        <activity android:name=".SignUp" />
-        <activity android:name=".Login">
+
+        <activity android:name=".SignUp"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".Login"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity">
-        </activity>
-    </application>
 
+        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait">
+        </activity>
+
+    </application>
 </manifest>
