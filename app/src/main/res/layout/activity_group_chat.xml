@@ -34,7 +34,7 @@
             android:id="@+id/input_message"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="Say something..."
+            android:hint="@string/say_something"
             android:padding="17dp"
             android:layout_weight="4"
             android:backgroundTint="@color/colorPrimary"

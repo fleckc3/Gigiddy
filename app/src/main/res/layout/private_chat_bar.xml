@@ -31,7 +31,7 @@
         android:layout_toRightOf="@+id/private_chat_profile_image"
         android:layout_marginLeft="10dp"
         android:layout_centerVertical="true"
-        android:text="display user name"
+        android:text="@string/display_user_name"
         android:textColor="#FFFFFF"
         android:textSize="18sp"/>
 

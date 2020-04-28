@@ -19,7 +19,7 @@
         android:layout_below="@+id/set_profile_image"
         android:layout_marginTop="3dp"
         android:layout_centerHorizontal="true"
-        android:text="Click image to set Profile Image"
+        android:text="@string/click_image_to_set_profile_image"
         android:textColor="@color/colorPrimary"
         android:visibility="invisible" />
 

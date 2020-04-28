@@ -21,33 +21,36 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:textColor="@android:color/black"
-        android:text="username here"
-        android:layout_toRightOf="@+id/message_profile_image"/>
+        android:text="@string/username_here"
+        android:layout_toEndOf="@+id/message_profile_image"/>
 
     <TextView
         android:id="@+id/receiver_message_text"
-        android:layout_width="250dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_marginTop="25dp"
+        android:layout_marginEnd="40dp"
         android:layout_toEndOf="@+id/message_profile_image"
         android:background="@drawable/receiver_messages_layout"
-        android:text="receiver messages here"
+        android:text="@string/receiver_messages_here"
         android:padding="10dp"
         android:textSize="14sp"
         android:textColor="@android:color/black"/>
 
     <TextView
         android:id="@+id/sender_message_text"
-        android:layout_width="250dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="20dp"
-        android:layout_marginRight="10dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="10dp"
         android:background="@drawable/sender_messages_layout"
-        android:text="sender messages here"
+        android:text="@string/sender_messages_here"
         android:layout_alignParentTop="@+id/receiver_message_text"
         android:padding="10dp"
         android:textSize="14sp"
         android:textColor="@android:color/black"/>
+
 </RelativeLayout>

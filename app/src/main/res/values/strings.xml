@@ -44,4 +44,11 @@
     <string name="username_here">username here</string>
     <string name="date_and_time">date and time</string>
     <string name="sender_message_go_here">sender message go here</string>
+    <string name="say_something">Say something...</string>
+    <string name="click_image_to_set_profile_image">Click image to set Profile Image</string>
+    <string name="receiver_messages_here">receiver messages here</string>
+    <string name="instructions">Instructions</string>
+    <string name="swipe_right_and_left">- Swipe right and left to see Chat, Roster, and Members in your group</string>
+    <string name="click_three_dots">- Click three dots in right hand corner to Logout, Find Friends, check Friend Requests, and change Profile info</string>
+    <string name="display_user_name">display user name</string>
 </resources>

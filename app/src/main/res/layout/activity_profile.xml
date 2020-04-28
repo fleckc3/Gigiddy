@@ -97,5 +97,4 @@
         android:paddingBottom="2dp"
         android:visibility="invisible"/>
 
-
 </RelativeLayout>
