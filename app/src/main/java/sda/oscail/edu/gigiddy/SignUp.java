@@ -24,15 +24,30 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+/**
+ * The SignUp class serves as the gateway into Gigiddy for first time users. Their username and password
+ * are saved in the db for authentication. The user is then taken to the settings activity for onboarding.
+ *    - Adapted from: https://www.youtube.com/playlist?list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj
+ *
+ * @author Colin Fleck <colin.fleck@mail.dcu.ie>
+ * @version 1.0
+ * @since 12/03/2020
+ */
 public class SignUp extends AppCompatActivity {
     private static final String TAG = "SignUp";
 
+    // username, pwd, firebase variables declared
     EditText emailId, password;
     TextView login;
     Button btnRegister;
     private FirebaseAuth mAuth;
     private DatabaseReference dbRef;
 
+    /**
+     * The oncReate() method creates the singup activity and initialises the view objects along with any other
+     * logic to be used with authentication or signup.
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,10 +107,8 @@ public class SignUp extends AppCompatActivity {
                 } else if (email.isEmpty() && pwd.isEmpty()) {
                     Toast.makeText(SignUp.this, "Fields Are Empty", Toast.LENGTH_SHORT).show();
 
-                // If they arent empty...
+                // If they arent empty Then Add user email and password to firebase
                 } else if (!(email.isEmpty() && pwd.isEmpty())) {
-
-                    // ....Then Add user email and password to firebase
                     mAuth.createUserWithEmailAndPassword(email, pwd).addOnCompleteListener(SignUp.this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
@@ -106,7 +119,6 @@ public class SignUp extends AppCompatActivity {
 
                             // ... if task succesful then add info to user to db
                             } else {
-
                                 String currentUserID = mAuth.getCurrentUser().getUid();
                                 dbRef.child("Users").child(currentUserID).setValue("");
 
@@ -120,7 +132,7 @@ public class SignUp extends AppCompatActivity {
                         }
                     });
 
-                // alert use if error
+                // alert user if error
                 } else {
                     Toast.makeText(SignUp.this, "Error Occurred!", Toast.LENGTH_SHORT).show();
                 }

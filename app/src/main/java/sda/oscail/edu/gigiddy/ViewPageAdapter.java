@@ -1,12 +1,20 @@
 package sda.oscail.edu.gigiddy;
 
 import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
+/**
+ * The ViewPageAdapter() method handles the fragments and tabbed view. It helps with navigation and
+ * switching between each fragment.
+ *      - ref: SDA course materials and supplementary Android tutorial projects
+ *
+ * @author Colin Fleck <colin.fleck@mail.dcu.ie>
+ * @version 1.0
+ * @since 10/03/2020
+ */
 public class ViewPageAdapter extends FragmentPagerAdapter{
 
     private Context context;
@@ -45,7 +53,6 @@ public class ViewPageAdapter extends FragmentPagerAdapter{
                 fragment = new Members();
                 break;
         }
-
         return fragment;
     }
 
@@ -57,7 +64,6 @@ public class ViewPageAdapter extends FragmentPagerAdapter{
     @Override
     public CharSequence getPageTitle(int position) {
         position = position+1;
-
         CharSequence tabTitle = "";
 
         //finds the fragment
@@ -80,7 +86,6 @@ public class ViewPageAdapter extends FragmentPagerAdapter{
                 tabTitle = "Members";
                 break;
         }
-
         return tabTitle;
     }
 }

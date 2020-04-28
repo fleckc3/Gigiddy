@@ -52,10 +52,18 @@ import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-// reference https://www.youtube.com/watch?v=pI53o4r5vSo&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=13
+/**
+ * The Setting Activity allows the user to set and update their user profile image, username, and status.
+ *    - Adapted from: https://www.youtube.com/watch?v=pI53o4r5vSo&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=13
+ *
+ * @author Colin Fleck <colin.fleck@mail.dcu.ie>
+ * @version 1.0
+ * @since 29/03/2020
+ */
 public class Settings extends AppCompatActivity {
-
     private static final String TAG = "Settings";
+
+    // view variables declared
     private Button updateAccountSettings;
     private EditText username, userStatus;
     private CircleImageView userProfileImage;
@@ -63,13 +71,19 @@ public class Settings extends AppCompatActivity {
     private Toolbar toolbar;
     private TextView setImageText;
 
+    // Firebase ref and variables declared
     private String currentUserID;
     private FirebaseAuth mAuth;
     private DatabaseReference dbRef;
     private String imageUrl, setUserType;
     private static String fromActivity;
 
-
+    /**
+     * The onCreate() method creates the setting view and initialises all relevant variables. A check
+     * is ran on this activity because it also serves as the user onboarding when first registering. So
+     * different functionality takes place depending on which activity starts the settings activity
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,7 +104,7 @@ public class Settings extends AppCompatActivity {
         fromActivity = getIntent().getExtras().get("from_activity").toString();
         Log.d(TAG, "///////////////// ------------- " +fromActivity);
 
-        // If string variable equals regiser then previous activity was the signup activity
+        // if prev activity was the main activity or the set profile image activity
         if(fromActivity.equals("main") || fromActivity.equals("crop_image")) {
 
             toolbar = findViewById(R.id.setting_app_bar);
@@ -100,6 +114,7 @@ public class Settings extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
             getSupportActionBar().setTitle("Settings");
 
+        // If string variable equals register then previous activity was the signup activity
         } else if(fromActivity.equals("register")) {
             btnHome = findViewById(R.id.btn_home);
             setImageText = findViewById(R.id.click_image);
@@ -115,8 +130,7 @@ public class Settings extends AppCompatActivity {
             });
         }
 
-
-        //update account settings
+        //update account settings in db method called
         updateAccountSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -126,6 +140,7 @@ public class Settings extends AppCompatActivity {
 
         getUserInfo();
 
+        // starts the profile image activity
         userProfileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -135,8 +150,12 @@ public class Settings extends AppCompatActivity {
         });
     }
 
-    // goes back to fragment that calls this activity
-    // ref: https://stackoverflow.com/questions/31491093/how-to-go-back-to-previous-fragment-from-activity
+    /**
+     * The onOptionsItemSelected() method goes back to fragment that calls this activity
+     *      ref: https://stackoverflow.com/questions/31491093/how-to-go-back-to-previous-fragment-from-activity
+     * @param item back button
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -149,7 +168,9 @@ public class Settings extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    // retrieve user info from db and storage
+    /**
+     * The getUserInfo() method retrieves user info from db and storage and sets them in the view
+     */
     private void getUserInfo() {
         dbRef.child("Users").child(currentUserID)
                 .addValueEventListener(new ValueEventListener() {
@@ -194,17 +215,22 @@ public class Settings extends AppCompatActivity {
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                        // handle db error here
                     }
                 });
     }
 
-    // update user info in db and storage
+    /**
+     * The updateSettings() method updates the user info in the db with the info inputted into the fields
+     */
     private void updateSettings() {
         String setUsername = username.getText().toString();
         String setStatus = userStatus.getText().toString();
 
+
         if(fromActivity.equals("main") || fromActivity.equals("crop_image")) {
+
+            // Checks to make sure the update settings doesn't override and 'admin' users type with 'member'
             DatabaseReference currentUserType = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID).child("user_type");
             currentUserType.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -216,22 +242,24 @@ public class Settings extends AppCompatActivity {
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                    // handle db error here
                 }
             });
         }
 
-
         Log.d(TAG, "////////////////////////////////--------------------- user type = " + setUserType);
 
-
+        // Check fields are empty and alert user
         if(TextUtils.isEmpty(setStatus)) {
             Toast.makeText(this, "Please write a status...", Toast.LENGTH_SHORT).show();
         } else if(TextUtils.isEmpty(setUsername)) {
             Toast.makeText(this, "Please set your username...", Toast.LENGTH_SHORT).show();
         } else {
 
+            // create map pof profile info to be saved in user db
             HashMap<String, Object> profileMap = new HashMap<>();
+
+            // set default profile image if user doesn't set one
             if(imageUrl == null) {
                 imageUrl = "https://firebasestorage.googleapis.com/v0/b/gigiddy-9e0c8.appspot.com/o/Profile%20Images%2Fprofile_image.png?alt=media&token=98a27baf-279f-4ba3-a34f-82308053aed3";
                 profileMap.put("image", imageUrl);
@@ -239,15 +267,17 @@ public class Settings extends AppCompatActivity {
                 profileMap.put("image", imageUrl);
             }
 
+            // sets the type of member when onboarding after egister activity
             if(fromActivity.equals("register")) {
                 profileMap.put("user_type", "member");
             }
 
+            // sets rest of user info inputted by user
             profileMap.put("uid", currentUserID);
             profileMap.put("name", setUsername);
             profileMap.put("status", setStatus);
 
-
+            // updates the users info in db
             dbRef.child("Users").child(currentUserID).updateChildren(profileMap)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
@@ -260,13 +290,11 @@ public class Settings extends AppCompatActivity {
                             }
                         }
                     });
-
+            // home button only used when onboarding
             if(fromActivity.equals("register")) {
                 btnHome.setEnabled(true);
                 btnHome.setVisibility(View.VISIBLE);
             }
         }
-
-
     }
 }

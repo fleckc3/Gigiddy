@@ -49,27 +49,43 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-// ref: https://theartofdev.com/2015/02/15/android-cropping-image-from-camera-or-gallery/
-// ref: https://gist.github.com/ArthurHub/8a8530dd688df409fb20
+/**
+ * The SetProfileImage activity allows a user to uer their camera or select an image from their phone
+ * to set as their profile image. The user can crop and zoom on the image to manipulate it hwo they desire.
+ * This activity was achieved by using a third party library and adapting the information found in these references:
+ *    - Adapted from:  https://theartofdev.com/2015/02/15/android-cropping-image-from-camera-or-gallery/
+ *                     https://gist.github.com/ArthurHub/8a8530dd688df409fb20
+ *
+ * @author Colin Fleck <colin.fleck@mail.dcu.ie>
+ * @version 1.0
+ * @since 05/04/2020
+ */
 public class SetProfileImage extends AppCompatActivity {
     private static final String TAG = "SetProfileImage";
 
+    // Activity variables declared
     private CropImageView mCropImageView;
     private Uri mCropImageUri;
     Button saveImage;
 
+    // Firebase authe and references declared
     private DatabaseReference dbRef;
     private StorageReference userProfileImageRef;
     private String currentUserID;
     private FirebaseAuth mAuth;
-
     private ProgressDialog loadingBar;
 
+    /**
+     * The onCreate() method creates the activity view and initialises all relevant fields to be
+     * queried, manipulated, and processed by this activity.
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set_profile_image);
 
+        // Initialise the activity view objects
         mCropImageView = findViewById(R.id.CropImageView);
         saveImage = findViewById(R.id.save_image);
         loadingBar = new ProgressDialog(this);
@@ -80,29 +96,33 @@ public class SetProfileImage extends AppCompatActivity {
         dbRef = FirebaseDatabase.getInstance().getReference();
         userProfileImageRef = FirebaseStorage.getInstance().getReference().child("Profile Images");
 
+        // Saves the image in the DB
         saveImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 loadingBar.setTitle("Set profile Image");
                 loadingBar.setMessage("Please wait, your profile image is updating...");
                 loadingBar.setCanceledOnTouchOutside(false);
                 loadingBar.show();
 
+                // converts the image to jpg and prepares to be uploaded to db
                 //ref: https://firebase.google.com/docs/storage/android/upload-files
                 Bitmap croppedImage = mCropImageView.getCroppedImage();
                 ByteArrayOutputStream bytes = new ByteArrayOutputStream();
                 croppedImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
                 byte[] data = bytes.toByteArray();
 
+                // sets the image name with the users id
                 final StorageReference filePath = userProfileImageRef.child(currentUserID + ".jpg");
                 final UploadTask uploadTask = filePath.putBytes(data);
                 uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         if(uploadTask.isSuccessful()) {
+
                             Toast.makeText(SetProfileImage.this, "Image uploaded successfully!", Toast.LENGTH_SHORT).show();
 
+                            // gets the url to the image in the firebase storage
                             //ref: https://stackoverflow.com/questions/50158921/firebase-storage-retrieves-a-long-lived-download-url-using-getdownloadurl-no
                             taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                 @Override
@@ -110,6 +130,7 @@ public class SetProfileImage extends AppCompatActivity {
                                     String downloadUrl = uri.toString();
                                     Log.d(TAG, "/////////////////// ------ " + downloadUrl);
 
+                                    // sets the profile image in the users db
                                     // ref: https://www.youtube.com/watch?v=zV9PSBnCkJc&list=PLxefhmF0pcPmtdoud8f64EpgapkclCllj&index=27
                                     dbRef.child("Users").child(currentUserID).child("image")
                                             .setValue(downloadUrl)
@@ -117,12 +138,17 @@ public class SetProfileImage extends AppCompatActivity {
                                                 @Override
                                                 public void onComplete(@NonNull Task<Void> task) {
                                                     if(task.isSuccessful()) {
+
                                                         Toast.makeText(SetProfileImage.this, "Image save in database successfully...", Toast.LENGTH_SHORT).show();
                                                         loadingBar.dismiss();
-                                                         Intent goBacktoSettings = new Intent(SetProfileImage.this, Settings.class);
-                                                         goBacktoSettings.putExtra("from_activity", "crop_image");
-                                                         startActivity(goBacktoSettings);
+
+                                                        // head back to setting activity once image uploaded
+                                                        Intent goBacktoSettings = new Intent(SetProfileImage.this, Settings.class);
+                                                        goBacktoSettings.putExtra("from_activity", "crop_image");
+                                                        startActivity(goBacktoSettings);
                                                     } else {
+
+                                                        // alert user if problem happened while uploading to db
                                                         String message = task.getException().toString();
                                                         Toast.makeText(SetProfileImage.this, "Error: " + message, Toast.LENGTH_SHORT).show();
                                                         loadingBar.dismiss();
@@ -132,6 +158,8 @@ public class SetProfileImage extends AppCompatActivity {
                                 }
                             });
                         } else {
+
+                            // alert user if uplaod to storage was unsuccessful
                             String message = uploadTask.getException().toString();
                             Toast.makeText(SetProfileImage.this, "Error: " + message, Toast.LENGTH_SHORT).show();
                             loadingBar.dismiss();
@@ -143,7 +171,10 @@ public class SetProfileImage extends AppCompatActivity {
     }
 
     /**
-     * On load image button click, start pick image chooser activity.
+     * The onLoadImageClick() method is called on the button click, start pick image chooser activity.
+     * Allows user to select from which source the image will be chosen from.
+     *      ref: https://theartofdev.com/2015/02/15/android-cropping-image-from-camera-or-gallery/
+     *           https://gist.github.com/ArthurHub/8a8530dd688df409fb20
      */
     public void onLoadImageClick(View view) {
         startActivityForResult(getPickImageChooserIntent(), 200);
@@ -151,7 +182,9 @@ public class SetProfileImage extends AppCompatActivity {
     }
 
     /**
-     * Crop the image and set it back to the cropping view.
+     * The onCropImageClick() method crops the image and sets it back to the cropping view.
+     *    ref: https://theartofdev.com/2015/02/15/android-cropping-image-from-camera-or-gallery/
+     *         https://gist.github.com/ArthurHub/8a8530dd688df409fb20
      */
     public void onCropImageClick(View view) {
         Bitmap cropped = mCropImageView.getCroppedImage(500, 500);
@@ -160,6 +193,13 @@ public class SetProfileImage extends AppCompatActivity {
         }
     }
 
+    /**
+     * The onActivityResult() method gets the image selected by the user. This also checks the user permissions
+     * for where the image comes from.
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -188,6 +228,12 @@ public class SetProfileImage extends AppCompatActivity {
         saveImage.setClickable(true);
     }
 
+    /**
+     * The onRequestPernissionResult() method deals with the permissions and if they are allowed or not
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         if (mCropImageUri != null && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -201,6 +247,8 @@ public class SetProfileImage extends AppCompatActivity {
      * Create a chooser intent to select the source to get image from.<br/>
      * The source can be camera's (ACTION_IMAGE_CAPTURE) or gallery's (ACTION_GET_CONTENT).<br/>
      * All possible sources are added to the intent chooser.
+     *      ref: https://theartofdev.com/2015/02/15/android-cropping-image-from-camera-or-gallery/
+     *           https://gist.github.com/ArthurHub/8a8530dd688df409fb20
      */
     public Intent getPickImageChooserIntent() {
 
@@ -255,6 +303,8 @@ public class SetProfileImage extends AppCompatActivity {
 
     /**
      * Get URI to image received from capture by camera.
+     *      ref: https://theartofdev.com/2015/02/15/android-cropping-image-from-camera-or-gallery/
+     *           https://gist.github.com/ArthurHub/8a8530dd688df409fb20
      */
     private Uri getCaptureImageOutputUri() {
         Uri outputFileUri = null;
@@ -268,6 +318,8 @@ public class SetProfileImage extends AppCompatActivity {
     /**
      * Get the URI of the selected image from {@link #getPickImageChooserIntent()}.<br/>
      * Will return the correct URI for camera and gallery image.
+     *      ref: https://theartofdev.com/2015/02/15/android-cropping-image-from-camera-or-gallery/
+     *           https://gist.github.com/ArthurHub/8a8530dd688df409fb20
      *
      * @param data the returned data of the activity result
      */
@@ -282,6 +334,8 @@ public class SetProfileImage extends AppCompatActivity {
 
     /**
      * Test if we can open the given Android URI to test if permission required error is thrown.<br>
+     *      ref: https://theartofdev.com/2015/02/15/android-cropping-image-from-camera-or-gallery/
+     *           https://gist.github.com/ArthurHub/8a8530dd688df409fb20
      */
     public boolean isUriRequiresPermissions(Uri uri) {
         try {
