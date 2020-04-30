@@ -13,7 +13,6 @@
     <string name="member_login">Already a Member? Login here</string>
     <string name="btn_register">Register</string>
     <string name="app_label">Gigiddy</string>
-    <string name="logout">Logout</string>
     <string name="settings_username">username</string>
     <string name="status_hint">Hey I am online...</string>
     <string name="button_update">Update</string>
@@ -51,4 +50,8 @@
     <string name="swipe_right_and_left">- Swipe right and left to see Chat, Roster, and Members in your group</string>
     <string name="click_three_dots">- Click three dots in right hand corner to Logout, Find Friends, check Friend Requests, and change Profile info</string>
     <string name="display_user_name">display user name</string>
+    <string name="find_friends">Find Friends</string>
+    <string name="check_requests">Check Requests</string>
+    <string name="my_profile">My Profile</string>
+    <string name="logout">Logout</string>
 </resources>

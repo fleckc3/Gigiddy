@@ -1,8 +1,44 @@
 package sda.oscail.edu.gigiddy;
 
+/**
+ * Originally forked from edmodo/cropper.
+ *
+ * Copyright 2016, Arthur Teplitzki, 2013, Edmodo, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this work except in compliance with the License. You may obtain a copy of the
+ * License in the LICENSE file, or at:
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ * Copyright 2013, Edmodo, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this work except in compliance with the License. You may obtain a copy of the
+ * License in the LICENSE file, or at:
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import android.Manifest;
 import android.app.Activity;
@@ -13,8 +49,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,12 +58,9 @@ import android.system.ErrnoException;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -38,7 +69,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.ByteArrayOutputStream;
@@ -54,6 +84,7 @@ import java.util.List;
  * to set as their profile image. The user can crop and zoom on the image to manipulate it hwo they desire.
  * This activity was achieved by using a third party library and adapting the information found in these references:
  *    - Adapted from:  https://theartofdev.com/2015/02/15/android-cropping-image-from-camera-or-gallery/
+ *                     https://github.com/edmodo/cropper
  *                     https://gist.github.com/ArthurHub/8a8530dd688df409fb20
  *
  * @author Colin Fleck <colin.fleck@mail.dcu.ie>
@@ -68,7 +99,7 @@ public class SetProfileImage extends AppCompatActivity {
     private Uri mCropImageUri;
     Button saveImage;
 
-    // Firebase authe and references declared
+    // Firebase auth and references declared
     private DatabaseReference dbRef;
     private StorageReference userProfileImageRef;
     private String currentUserID;

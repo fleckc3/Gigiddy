@@ -3,25 +3,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:title="Find Friends"
+        android:title="@string/find_friends"
         android:id="@+id/find_friends_option"
         app:showAsAction="never">
 
     </item>
     <item
-        android:title="Check Requests"
+        android:title="@string/check_requests"
         android:id="@+id/requests_option"
         app:showAsAction="never">
 
     </item>
     <item
-        android:title="Profile"
+        android:title="@string/my_profile"
         android:id="@+id/settings_option"
         app:showAsAction="never">
 
     </item>
     <item
-        android:title="Logout"
+        android:title="@string/logout"
         android:id="@+id/logout_option"
         app:showAsAction="never">
 
