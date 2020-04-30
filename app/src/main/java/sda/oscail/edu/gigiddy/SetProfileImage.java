@@ -17,10 +17,7 @@ package sda.oscail.edu.gigiddy;
  * the License.
  *
  *
- *
- *
- *
- *
+ * -------------------------------------------------------------------------------------
  *
  *
  * Copyright 2013, Edmodo, Inc.
@@ -97,7 +94,8 @@ public class SetProfileImage extends AppCompatActivity {
     // Activity variables declared
     private CropImageView mCropImageView;
     private Uri mCropImageUri;
-    Button saveImage;
+    private Button saveImage;
+    private String registerStatus;
 
     // Firebase auth and references declared
     private DatabaseReference dbRef;
@@ -126,6 +124,10 @@ public class SetProfileImage extends AppCompatActivity {
         currentUserID = mAuth.getCurrentUser().getUid();
         dbRef = FirebaseDatabase.getInstance().getReference();
         userProfileImageRef = FirebaseStorage.getInstance().getReference().child("Profile Images");
+
+        // Gets the registered status of user
+        registerStatus = getIntent().getExtras().get("check_registered").toString();
+        Log.d(TAG, "////////////////////////////////// --------------------------- registered status: " + registerStatus);
 
         // Saves the image in the DB
         saveImage.setOnClickListener(new View.OnClickListener() {
@@ -174,8 +176,10 @@ public class SetProfileImage extends AppCompatActivity {
                                                         loadingBar.dismiss();
 
                                                         // head back to setting activity once image uploaded
+                                                        // From activity and registerd status passed in bundle to be checked in settings activity
                                                         Intent goBacktoSettings = new Intent(SetProfileImage.this, Settings.class);
                                                         goBacktoSettings.putExtra("from_activity", "crop_image");
+                                                        goBacktoSettings.putExtra("check_registered", registerStatus);
                                                         startActivity(goBacktoSettings);
                                                     } else {
 
@@ -188,9 +192,9 @@ public class SetProfileImage extends AppCompatActivity {
                                     });
                                 }
                             });
-                        } else {
 
-                            // alert user if uplaod to storage was unsuccessful
+                        // alert user if uplaod to storage was unsuccessful
+                        } else {
                             String message = uploadTask.getException().toString();
                             Toast.makeText(SetProfileImage.this, "Error: " + message, Toast.LENGTH_SHORT).show();
                             loadingBar.dismiss();

@@ -107,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
         if(item.getItemId() == R.id.settings_option) {
             Intent toSettingsActivity = new Intent(this, Settings.class);
             toSettingsActivity.putExtra("from_activity", "main");
+            toSettingsActivity.putExtra("check_registered", "registered");
             startActivity(toSettingsActivity);
         }
 

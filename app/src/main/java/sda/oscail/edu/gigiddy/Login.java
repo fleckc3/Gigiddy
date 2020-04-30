@@ -117,7 +117,7 @@ public class Login extends AppCompatActivity {
                     emailId.requestFocus();
 
                 } else if (pwd.isEmpty()) {
-                    password.setError("PLease enter your password");
+                    password.setError("Please enter your password");
                     password.requestFocus();
 
                 } else if (email.isEmpty() && pwd.isEmpty()) {

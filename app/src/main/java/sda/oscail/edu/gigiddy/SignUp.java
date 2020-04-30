@@ -126,6 +126,7 @@ public class SignUp extends AppCompatActivity {
                                 Intent toSettingsActivity = new Intent(SignUp.this, Settings.class);
                                 toSettingsActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 toSettingsActivity.putExtra("from_activity", "register");
+                                toSettingsActivity.putExtra("check_registered", "registering");
                                 startActivity(toSettingsActivity);
                                 finish();
                             }

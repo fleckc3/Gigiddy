@@ -70,6 +70,7 @@ public class Settings extends AppCompatActivity {
     private Button btnHome;
     private Toolbar toolbar;
     private TextView setImageText;
+    private String registerStatus;
 
     // Firebase ref and variables declared
     private String currentUserID;
@@ -100,12 +101,15 @@ public class Settings extends AppCompatActivity {
         userStatus = findViewById(R.id.set_status);
         userProfileImage = findViewById(R.id.set_profile_image);
 
-        // String value passed from signup activity to be checked in the following if statement
+        // String variables passed from prev activities to be checked
         fromActivity = getIntent().getExtras().get("from_activity").toString();
-        Log.d(TAG, "///////////////// ------------- " +fromActivity);
+        Log.d(TAG, "///////////////// ------------- from activity is: " + fromActivity);
+        registerStatus = getIntent().getExtras().get("check_registered").toString();
+        Log.d(TAG, "///////////////// ------------- check registered: " + registerStatus);
 
-        // if prev activity was the main activity or the set profile image activity
-        if(fromActivity.equals("main") || fromActivity.equals("crop_image")) {
+        // if prev activity was the main activity or the set profile image activity AND the user is
+        // registered, enable the toolbar
+        if((fromActivity.equals("main") || fromActivity.equals("crop_image")) && registerStatus.equals("registered")) {
 
             toolbar = findViewById(R.id.setting_app_bar);
             toolbar.setVisibility(View.VISIBLE);
@@ -114,8 +118,10 @@ public class Settings extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
             getSupportActionBar().setTitle("Settings");
 
-        // If string variable equals register then previous activity was the signup activity
-        } else if(fromActivity.equals("register")) {
+        // if previous activity was register or user status is still registering
+        // home btn enabled and onboarding suggestion visible
+        } else if(fromActivity.equals("register") || registerStatus.equals("registering")) {
+
             btnHome = findViewById(R.id.btn_home);
             setImageText = findViewById(R.id.click_image);
             setImageText.setVisibility(View.VISIBLE);
@@ -130,6 +136,8 @@ public class Settings extends AppCompatActivity {
             });
         }
 
+        getUserInfo();
+
         //update account settings in db method called
         updateAccountSettings.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -138,16 +146,40 @@ public class Settings extends AppCompatActivity {
             }
         });
 
-        getUserInfo();
-
         // starts the profile image activity
         userProfileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent getPicIntent = new Intent(Settings.this, SetProfileImage.class);
+                getPicIntent.putExtra("check_registered", registerStatus);
                 startActivity(getPicIntent);
             }
         });
+    }
+
+    /**
+     * The onStart() method is called after the onCreate(). Here it is checking the pervious activity
+     * and the registered status of the user.
+     */
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        getUserInfo();
+
+        // String variables passed from prev activities to be checked
+        fromActivity = getIntent().getExtras().get("from_activity").toString();
+        Log.d(TAG, "///////////////// ------------- from activity is: " + fromActivity);
+
+        registerStatus = getIntent().getExtras().get("check_registered").toString();
+        Log.d(TAG, "///////////////// ------------- check registered: " + registerStatus);
+
+        // if still registering then the home btn is enabled and the onboarding text suggestion is visible
+        if(registerStatus.equals("registering")) {
+            btnHome = findViewById(R.id.btn_home);
+            setImageText = findViewById(R.id.click_image);
+            setImageText.setVisibility(View.VISIBLE);
+        }
     }
 
     /**
@@ -193,6 +225,12 @@ public class Settings extends AppCompatActivity {
                             username.setText(getUsername);
                             userStatus.setText(getUserStatus);
 
+                            // Makes the home btn visible
+                            if(registerStatus.equals("registering")) {
+                                btnHome.setEnabled(true);
+                                btnHome.setVisibility(View.VISIBLE);
+                            }
+
                         } else if(dataSnapshot.exists() && dataSnapshot.hasChild("name") && dataSnapshot.hasChild("status")) {
 
                             String getUsername = dataSnapshot.child("name").getValue().toString();
@@ -224,13 +262,16 @@ public class Settings extends AppCompatActivity {
      * The updateSettings() method updates the user info in the db with the info inputted into the fields
      */
     private void updateSettings() {
+
+        // grabs the user input
         String setUsername = username.getText().toString();
         String setStatus = userStatus.getText().toString();
 
+        // checks if the user is already registered and if the previous activity was the main or the setprofile image activity
+        if(registerStatus.equals("registered") && (fromActivity.equals("main") || fromActivity.equals("crop_image"))) {
 
-        if(fromActivity.equals("main") || fromActivity.equals("crop_image")) {
-
-            // Checks to make sure the update settings doesn't override and 'admin' users type with 'member'
+            // Checks DB to get the users  type
+            // This makes sure the update settings doesn't override an 'admin' users type with 'member'
             DatabaseReference currentUserType = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID).child("user_type");
             currentUserType.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -263,12 +304,10 @@ public class Settings extends AppCompatActivity {
             if(imageUrl == null) {
                 imageUrl = "https://firebasestorage.googleapis.com/v0/b/gigiddy-9e0c8.appspot.com/o/Profile%20Images%2Fprofile_image.png?alt=media&token=98a27baf-279f-4ba3-a34f-82308053aed3";
                 profileMap.put("image", imageUrl);
-            } else {
-                profileMap.put("image", imageUrl);
             }
 
             // sets the type of member when onboarding after egister activity
-            if(fromActivity.equals("register")) {
+            if(fromActivity.equals("register") || registerStatus.equals("registering")) {
                 profileMap.put("user_type", "member");
             }
 
@@ -276,6 +315,8 @@ public class Settings extends AppCompatActivity {
             profileMap.put("uid", currentUserID);
             profileMap.put("name", setUsername);
             profileMap.put("status", setStatus);
+
+            Log.d(TAG, "///////////////////////// -------------------------- full map: " + profileMap);
 
             // updates the users info in db
             dbRef.child("Users").child(currentUserID).updateChildren(profileMap)
@@ -290,8 +331,9 @@ public class Settings extends AppCompatActivity {
                             }
                         }
                     });
+
             // home button only used when onboarding
-            if(fromActivity.equals("register")) {
+            if(fromActivity.equals("register") || registerStatus.equals("registering")) {
                 btnHome.setEnabled(true);
                 btnHome.setVisibility(View.VISIBLE);
             }
