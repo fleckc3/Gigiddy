@@ -29,7 +29,7 @@
 >       - After registering complete user onboarding by setting the username, status, and a profile image(optional)
 
 > - The home screen explains a few of the options
-> ![home screen](images/home_screen.jpeg)
+> ![home screen](images/home_screen.jpeg = 100px)
 >    - Swipe right and left to visit:
 >       - __Noticeboard__
              - Welcome screen and general information
