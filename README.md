@@ -29,6 +29,7 @@
 >       - After registering complete user onboarding by setting the username, status, and a profile image(optional)
 
 > - The home screen explains a few of the options
+<img src="images/home_screen.jpeg" height="200" />
 > ![home screen](images/home_screen.jpeg =100x)
 >    - Swipe right and left to visit:
 >       - __Noticeboard__
