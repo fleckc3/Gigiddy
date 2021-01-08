@@ -33,12 +33,14 @@
 >    - Swipe right and left to visit:
 >       - __Noticeboard__
              - Welcome screen and general information
->            <img src="images/home_screen.jpeg" height="300" />
+>            - <img src="images/home_screen.jpeg" height="300" />
 >       - __Group Chat__
 >            - Create and take part in group chats
+>            - <img src="images/group_chat.jpeg" height="300" />
 >       - __Roster__
 >            - Check calendar for events
 >            - Admin users can set events for other members
+> <img src="images/calendar_tab.jpeg" height="300" /> <img src="images/choose_member.jpeg" height="300" />
 >       - __Members__
 >            - See all members of your group
 >            - Click on a member to enter 1:1 chat with that member
