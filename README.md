@@ -33,7 +33,7 @@
 >    - Swipe right and left to visit:
 >       - __Noticeboard__
              - Welcome screen and general information
->            - <img src="images/home_screen.jpeg" height="200" />
+>            <img src="images/home_screen.jpeg" height="300" />
 >       - __Group Chat__
 >            - Create and take part in group chats
 >       - __Roster__
