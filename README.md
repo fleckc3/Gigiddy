@@ -29,23 +29,29 @@
 >       - After registering complete user onboarding by setting the username, status, and a profile image(optional)
 
 > - The home screen explains a few of the options
+> 
 >    - Swipe right and left to visit:
 >       - __Noticeboard__
              - Welcome screen and general information
+>            - <img src="images/home_screen.jpeg" height="300" />
 >       - __Group Chat__
 >            - Create and take part in group chats
+>            - <img src="images/group_chat.jpeg" height="300" />
 >       - __Roster__
 >            - Check calendar for events
 >            - Admin users can set events for other members
+>            - <img src="images/calendar_tab.jpeg" height="300" /> <img src="images/choose_member.jpeg" height="300" />  <img src="images/choose_gig.jpeg" height="300" /> <img src="images/select_dates.jpeg" height="300" />  <img src="images/calendar_dates.jpeg" height="300" />
 >       - __Members__
 >            - See all members of your group
 >            - Click on a member to enter 1:1 chat with that member
+>            - <img src="images/members_tab.jpeg" height="300" />
 
 >    - Click the three-dot menu for:
 >       - __Find Members__
 >            - See all users on the platform
 >            - Click on a user to view their profile information
 >            - Send or cancel a friend request
+>            - <img src="images/members_tab.jpeg" height="300" />
 >       - __Check Requests__
 >            - Check friend requests sent to you
 >            - Accept or deny friend requests
