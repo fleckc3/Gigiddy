@@ -44,14 +44,14 @@
 >       - __Members__
 >            - See all members of your group
 >            - Click on a member to enter 1:1 chat with that member
->            - <img src="images/members_tab.jpeg" height="300" />
+>            - <img src="images/members_tab.jpeg" height="300" /> <img src="images/single_chat_1.jpeg" height="300" /> <img src="images/single_chat_2.jpeg" height="300" />
 
 >    - Click the three-dot menu for:
 >       - __Find Members__
 >            - See all users on the platform
 >            - Click on a user to view their profile information
 >            - Send or cancel a friend request
->            - <img src="images/members_tab.jpeg" height="300" />
+>            - <img src="images/find_members.jpeg" height="300" /> <img src="images/profile.jpeg" height="300" /> <img src="images/profile_cancel.jpeg" height="300" />
 >       - __Check Requests__
 >            - Check friend requests sent to you
 >            - Accept or deny friend requests
