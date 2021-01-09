@@ -40,10 +40,11 @@
 >       - __Roster__
 >            - Check calendar for events
 >            - Admin users can set events for other members
-> <img src="images/calendar_tab.jpeg" height="300" /> <img src="images/choose_member.jpeg" height="300" />
+>            - <img src="images/calendar_tab.jpeg" height="300" /> choose member<img src="images/choose_member.jpeg" height="300" /> choose gig <img src="images/choose_gig.jpeg" height="300" /> assign the dates<img src="images/select_dates.jpeg" height="300" /> dates show up in members calendar <img src="images/calendar_dates.jpeg" height="300" />
 >       - __Members__
 >            - See all members of your group
 >            - Click on a member to enter 1:1 chat with that member
+>            - <img src="images/members_tab.jpeg" height="300" />
 
 >    - Click the three-dot menu for:
 >       - __Find Members__
