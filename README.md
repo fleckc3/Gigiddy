@@ -55,8 +55,10 @@
 >       - __Check Requests__
 >            - Check friend requests sent to you
 >            - Accept or deny friend requests
+>            - <img src="images/requests.jpeg" height="300" />
 >       - __My Profile__
 >            - View and update your profile information
+>            - <img src="images/my_profile.jpeg" height="300" />
 >       - __Logout__
 >            - Logout out of Gigiddy
 
